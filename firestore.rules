@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pour l'instant, accès complet (à restreindre avec Auth)
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
