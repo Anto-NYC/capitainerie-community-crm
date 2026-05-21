@@ -1,87 +1,49 @@
 import {
   collection, doc, getDocs, getDoc,
   addDoc, updateDoc, deleteDoc,
-  query, orderBy, where, serverTimestamp, onSnapshot
+  query, orderBy, onSnapshot, serverTimestamp
 } from 'firebase/firestore';
 import { db } from './firebase';
-
-// ─── Members ───────────────────────────────────────────────────────────────
 
 export const subscribeToMembers = (callback) => {
   const q = query(collection(db, 'members'), orderBy('createdAt', 'desc'));
   return onSnapshot(q, (snap) => {
     const members = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     callback(members);
+  }, (error) => {
+    console.error('Members error:', error);
+    callback([]);
   });
 };
-
-export const getMember = async (id) => {
-  const snap = await getDoc(doc(db, 'members', id));
-  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
-};
-
-export const addMember = async (data) => {
-  return addDoc(collection(db, 'members'), {
-    ...data,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-};
-
-export const updateMember = async (id, data) => {
-  return updateDoc(doc(db, 'members', id), {
-    ...data,
-    updatedAt: serverTimestamp(),
-  });
-};
-
-export const deleteMember = async (id) => {
-  return deleteDoc(doc(db, 'members', id));
-};
-
-// ─── Cohorts ───────────────────────────────────────────────────────────────
 
 export const subscribeToCohorts = (callback) => {
   const q = query(collection(db, 'cohorts'), orderBy('number', 'asc'));
   return onSnapshot(q, (snap) => {
     const cohorts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     callback(cohorts);
+  }, (error) => {
+    console.error('Cohorts error:', error);
+    callback([]);
   });
 };
-
-export const addCohort = async (data) => {
-  return addDoc(collection(db, 'cohorts'), {
-    ...data,
-    createdAt: serverTimestamp(),
-  });
-};
-
-// ─── Matches ───────────────────────────────────────────────────────────────
 
 export const subscribeToMatches = (callback) => {
   const q = query(collection(db, 'matches'), orderBy('createdAt', 'desc'));
   return onSnapshot(q, (snap) => {
     const matches = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     callback(matches);
+  }, (error) => {
+    console.error('Matches error:', error);
+    callback([]);
   });
 };
 
-export const addMatch = async (data) => {
-  return addDoc(collection(db, 'matches'), {
-    ...data,
-    status: 'pending',
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-};
+export const addMember = (data) => addDoc(collection(db, 'members'), { ...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+export const updateMember = (id, data) => updateDoc(doc(db, 'members', id), { ...data, updatedAt: serverTimestamp() });
+export const deleteMember = (id) => deleteDoc(doc(db, 'members', id));
 
-export const updateMatchStatus = async (id, status) => {
-  return updateDoc(doc(db, 'matches', id), {
-    status,
-    updatedAt: serverTimestamp(),
-  });
-};
+export const addCohort = (data) => addDoc(collection(db, 'cohorts'), { ...data, createdAt: serverTimestamp() });
 
-export const deleteMatch = async (id) => {
-  return deleteDoc(doc(db, 'matches', id));
-};
+export const addMatch = (data) => addDoc(collection(db, 'matches'), { ...data, status: 'pending', createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+export const updateMatchStatus = (id, status) => updateDoc(doc(db, 'matches', id), { status, updatedAt: serverTimestamp() });
+export const deleteMatch = (id) => deleteDoc(doc(db, 'matches', id));
