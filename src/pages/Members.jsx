@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Users, Trash2, Edit2, MapPin, Briefcase, Heart, TrendingUp, X } from 'lucide-react';
+import { Plus, Search, Users, Trash2, Edit2, MapPin, Briefcase, Heart, TrendingUp, X } from '../components/Icons';
 import { subscribeToMembers, subscribeToCohorts, addMember, updateMember, deleteMember } from '../lib/firestore';
 import {
   Button, Modal, SectionHeader, EmptyState, Spinner, StatusBadge, Badge, Divider
@@ -46,8 +46,8 @@ export default function MembersPage() {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const unsub1 = subscribeToMembers(setMembers);
-    const unsub2 = subscribeToCohorts(setCohorts);
+    const unsub1 = subscribeToMembers((data) => setMembers(data || []));
+    const unsub2 = subscribeToCohorts((data) => setCohorts(data || []));
     setLoading(false);
     return () => { unsub1(); unsub2(); };
   }, []);

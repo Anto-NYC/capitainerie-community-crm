@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Users, Anchor, Zap, GitBranch } from 'lucide-react';
+import { Users, Anchor, Zap, GitBranch } from './Icons';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Membres', icon: Users },

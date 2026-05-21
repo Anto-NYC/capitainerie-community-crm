@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Briefcase, Heart, TrendingUp, ChevronRight } from 'lucide-react';
+import { MapPin, Briefcase, Heart, TrendingUp, ChevronRight } from './Icons';
 import { StatusBadge, Badge } from './UI';
 
 const INITIALS = (m) => {

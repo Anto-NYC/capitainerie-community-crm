@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, ChevronDown, ChevronUp, Plus, Check } from 'lucide-react';
+import { Zap, ChevronDown, ChevronUp, Plus, Check } from '../components/Icons';
 import { subscribeToMembers, addMatch } from '../lib/firestore';
 import { Button, Select, SectionHeader, EmptyState, Spinner, Badge, Card } from '../components/UI';
 

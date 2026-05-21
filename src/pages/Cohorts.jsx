@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Anchor, Users, Calendar } from 'lucide-react';
+import { Plus, Anchor, Users, Calendar } from '../components/Icons';
 import { subscribeToCohorts, subscribeToMembers, addCohort } from '../lib/firestore';
 import { Button, Card, Modal, Input, Textarea, SectionHeader, EmptyState, Spinner, Badge } from '../components/UI';
 

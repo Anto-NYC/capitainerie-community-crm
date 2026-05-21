@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GitBranch, Check, Clock, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { GitBranch, Check, Clock, Trash2, ChevronDown, ChevronUp } from '../components/Icons';
 import { subscribeToMatches, updateMatchStatus, deleteMatch } from '../lib/firestore';
 import { Button, SectionHeader, EmptyState, Spinner, StatusBadge, Modal } from '../components/UI';
 
