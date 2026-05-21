@@ -1,41 +1,28 @@
 import {
-  collection, doc, getDocs, getDoc,
-  addDoc, updateDoc, deleteDoc,
-  query, orderBy, onSnapshot, serverTimestamp
+  collection, doc, addDoc, updateDoc, deleteDoc,
+  query, onSnapshot, serverTimestamp
 } from 'firebase/firestore';
 import { db } from './firebase';
 
 export const subscribeToMembers = (callback) => {
-  const q = query(collection(db, 'members'), orderBy('createdAt', 'desc'));
+  const q = query(collection(db, 'members'));
   return onSnapshot(q, (snap) => {
-    const members = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    callback(members);
-  }, (error) => {
-    console.error('Members error:', error);
-    callback([]);
-  });
+    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  }, () => callback([]));
 };
 
 export const subscribeToCohorts = (callback) => {
-  const q = query(collection(db, 'cohorts'), orderBy('number', 'asc'));
+  const q = query(collection(db, 'cohorts'));
   return onSnapshot(q, (snap) => {
-    const cohorts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    callback(cohorts);
-  }, (error) => {
-    console.error('Cohorts error:', error);
-    callback([]);
-  });
+    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  }, () => callback([]));
 };
 
 export const subscribeToMatches = (callback) => {
-  const q = query(collection(db, 'matches'), orderBy('createdAt', 'desc'));
+  const q = query(collection(db, 'matches'));
   return onSnapshot(q, (snap) => {
-    const matches = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    callback(matches);
-  }, (error) => {
-    console.error('Matches error:', error);
-    callback([]);
-  });
+    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  }, () => callback([]));
 };
 
 export const addMember = (data) => addDoc(collection(db, 'members'), { ...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
