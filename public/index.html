@@ -24,17 +24,15 @@ body{color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-heig
 
 /* Header */
 .header{padding:52px 0 28px;display:flex;align-items:flex-start;justify-content:space-between}
-.header-left{}
 .header-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:600;color:var(--gold);letter-spacing:0.12em;text-transform:uppercase}
 .header-sub{font-size:11px;color:var(--text3);margin-top:3px;letter-spacing:0.04em;font-weight:300}
-.header-right{text-align:right}
-.header-num{font-family:'Syne',sans-serif;font-size:20px;font-weight:600;color:var(--text);line-height:1}
-.header-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;font-weight:400}
+.header-num{font-family:'Syne',sans-serif;font-size:20px;font-weight:600;color:var(--text);line-height:1;text-align:right}
+.header-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;font-weight:400;text-align:right}
 
 /* Nav */
 nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(10,10,12,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding-bottom:var(--safe)}
 .nav-inner{display:flex;height:var(--nav);max-width:620px;margin:0 auto}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;color:var(--text3);transition:color 0.2s;font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:0.03em;position:relative;padding:0;font-weight:400}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;color:var(--text3);transition:color 0.2s;font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:0.03em;position:relative;padding:0;font-weight:400}
 .nav-btn.active{color:var(--gold)}
 .nav-dot{position:absolute;top:0;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:0;transition:opacity 0.2s;margin-top:2px}
 .nav-btn.active .nav-dot{opacity:1}
@@ -62,7 +60,7 @@ select option{background:#1C1C1F}
 .btn-green{background:linear-gradient(135deg,#3B9B6E,#4DAF82);color:#fff}
 .btn-ghost{background:var(--input);color:var(--text2);border:1px solid var(--border)}
 .btn-danger{background:rgba(224,82,82,0.1);color:var(--red);border:1px solid rgba(224,82,82,0.18)}
-.btn-sm{padding:10px 18px;font-size:14px;border-radius:12px;width:auto}
+.btn-sm{padding:10px 18px;font-size:13px;border-radius:12px;width:auto}
 
 /* Badges */
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500}
@@ -129,19 +127,11 @@ select option{background:#1C1C1F}
 <!-- MEMBRES -->
 <div class="page active" id="page-members">
   <div class="header">
-    <div class="header-left">
-      <div class="header-title">La Capitainerie</div>
-      <div class="header-sub">Community CRM</div>
-    </div>
-    <div class="header-right">
-      <div class="header-num" id="count1">0</div>
-      <div class="header-label">Membres</div>
-    </div>
+    <div><div class="header-title">La Capitainerie</div><div class="header-sub">Community CRM</div></div>
+    <div><div class="header-num" id="count1">0</div><div class="header-label">Membres</div></div>
   </div>
   <div class="search-wrap">
-    <span class="search-icon">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    </span>
+    <span class="search-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
     <input type="text" placeholder="Rechercher un membre..." id="search-input" oninput="renderMembers()">
   </div>
   <div class="filters" id="status-filters">
@@ -156,30 +146,30 @@ select option{background:#1C1C1F}
 <!-- AJOUTER -->
 <div class="page" id="page-add">
   <div class="header">
-    <div class="header-left">
-      <div class="header-title">La Capitainerie</div>
-      <div class="header-sub">Community CRM</div>
-    </div>
-    <div class="header-right">
-      <div class="header-num" id="count2">0</div>
-      <div class="header-label">Membres</div>
-    </div>
+    <div><div class="header-title">La Capitainerie</div><div class="header-sub">Community CRM</div></div>
+    <div><div class="header-num" id="count2">0</div><div class="header-label">Membres</div></div>
   </div>
   <div class="section-label">Nouveau membre</div>
   <div id="add-form"></div>
 </div>
 
+<!-- COHORTES -->
+<div class="page" id="page-cohorts">
+  <div class="header">
+    <div><div class="header-title">La Capitainerie</div><div class="header-sub">Community CRM</div></div>
+    <div><div class="header-num" id="count3">0</div><div class="header-label">Vagues</div></div>
+  </div>
+  <div style="margin-bottom:16px">
+    <button class="btn btn-gold" onclick="openAddCohort()">+ Nouvelle vague</button>
+  </div>
+  <div id="cohorts-list"></div>
+</div>
+
 <!-- MATCHING -->
 <div class="page" id="page-matching">
   <div class="header">
-    <div class="header-left">
-      <div class="header-title">La Capitainerie</div>
-      <div class="header-sub">Community CRM</div>
-    </div>
-    <div class="header-right">
-      <div class="header-num" id="count3">0</div>
-      <div class="header-label">Membres</div>
-    </div>
+    <div><div class="header-title">La Capitainerie</div><div class="header-sub">Community CRM</div></div>
+    <div><div class="header-num" id="count4">0</div><div class="header-label">Membres</div></div>
   </div>
   <div class="field">
     <span class="field-label">Membre</span>
@@ -200,14 +190,8 @@ select option{background:#1C1C1F}
 <!-- LIENS -->
 <div class="page" id="page-relations">
   <div class="header">
-    <div class="header-left">
-      <div class="header-title">La Capitainerie</div>
-      <div class="header-sub">Community CRM</div>
-    </div>
-    <div class="header-right">
-      <div class="header-num" id="count4">0</div>
-      <div class="header-label">Liens</div>
-    </div>
+    <div><div class="header-title">La Capitainerie</div><div class="header-sub">Community CRM</div></div>
+    <div><div class="header-num" id="count5">0</div><div class="header-label">Liens</div></div>
   </div>
   <div class="filters">
     <button class="chip active" onclick="setRelFilter('all',this)">Tous</button>
@@ -219,27 +203,32 @@ select option{background:#1C1C1F}
 
 </div>
 
-<!-- NAV -->
+<!-- NAV 5 onglets -->
 <nav>
   <div class="nav-inner">
     <button class="nav-btn active" onclick="showPage('members',this)" id="nav-members">
       <div class="nav-dot"></div>
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>Membres</span>
     </button>
     <button class="nav-btn" onclick="showPage('add',this)" id="nav-add">
       <div class="nav-dot"></div>
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
       <span>Ajouter</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('cohorts',this)" id="nav-cohorts">
+      <div class="nav-dot"></div>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      <span>Cohortes</span>
     </button>
     <button class="nav-btn" onclick="showPage('matching',this)" id="nav-matching">
       <div class="nav-dot"></div>
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
       <span>Matching</span>
     </button>
     <button class="nav-btn" onclick="showPage('relations',this)" id="nav-relations">
       <div class="nav-dot"></div>
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
       <span>Liens</span>
     </button>
   </div>
@@ -252,7 +241,7 @@ select option{background:#1C1C1F}
   </div>
 </div>
 
-<!-- MODAL EDIT -->
+<!-- MODAL EDIT MEMBRE -->
 <div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEdit()">
   <div class="modal">
     <div class="modal-head">
@@ -260,6 +249,28 @@ select option{background:#1C1C1F}
       <button class="modal-x" onclick="closeEdit()">×</button>
     </div>
     <div class="modal-body" id="edit-body"></div>
+  </div>
+</div>
+
+<!-- MODAL AJOUTER COHORTE -->
+<div class="modal-overlay" id="cohort-modal" onclick="if(event.target===this)closeCohortModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Nouvelle vague</div>
+      <button class="modal-x" onclick="closeCohortModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid2">
+        <div class="field"><span class="field-label">Numéro</span><input type="number" id="c-number" placeholder="1"></div>
+        <div class="field"><span class="field-label">Nom</span><input type="text" id="c-name" placeholder="Vague Alpha"></div>
+      </div>
+      <div class="field"><span class="field-label">Date</span><input type="date" id="c-date"></div>
+      <div class="field"><span class="field-label">Description</span><textarea id="c-desc" rows="2" placeholder="Contexte de cette vague..."></textarea></div>
+      <div style="padding:8px 0 6px;display:flex;gap:10px">
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="closeCohortModal()">Annuler</button>
+        <button class="btn btn-gold btn-sm" style="flex:2" onclick="saveCohort()">Créer la vague</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -299,6 +310,7 @@ onSnapshot(collection(db,'members'), snap=>{
 });
 onSnapshot(collection(db,'cohorts'), snap=>{
   window._state.cohorts = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.number||0)-(b.number||0));
+  renderCohorts(); syncCounts();
 });
 onSnapshot(collection(db,'matches'), snap=>{
   window._state.matches = snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -321,9 +333,11 @@ function showPage(name,btn){
 }
 function syncCounts(){
   const n=(window._state.members||[]).length;
-  ['count1','count2','count3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=n;});
+  ['count1','count2','count4'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=n;});
+  const c=(window._state.cohorts||[]).length;
+  const el3=document.getElementById('count3');if(el3)el3.textContent=c;
   const r=(window._state.matches||[]).length;
-  const el=document.getElementById('count4');if(el)el.textContent=r;
+  const el5=document.getElementById('count5');if(el5)el5.textContent=r;
 }
 function setFilter(s,btn){
   window._state.filterStatus=s;
@@ -343,6 +357,7 @@ function badge(s){
   const lbl={'Nouveau':'Nouveau','Note envoyée':'Note envoyée','Actif':'Actif','pending':'En attente','done':'Fait'};
   return `<span class="badge badge-${map[s]||'gold'}">${lbl[s]||s}</span>`;
 }
+
 function renderMembers(){
   const {members,filterStatus}=window._state;
   const q=(document.getElementById('search-input')||{}).value||'';
@@ -374,16 +389,21 @@ function renderMembers(){
     </div>`;
   }).join('');
 }
+
 function openSheet(id){
   const m=window._state.members.find(x=>x.id===id);if(!m)return;
   const [bg,fg]=aC(m.firstName);
   const words=m.threeWordsArray||[];
+  const cohort=window._state.cohorts.find(c=>c.id===m.cohortId);
   document.getElementById('sheet-body').innerHTML=`
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
       <div style="width:52px;height:52px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;font-family:'Syne',sans-serif;background:${bg};color:${fg}">${ini(m)}</div>
       <div style="flex:1">
         <div style="font-family:'Syne',sans-serif;font-size:19px;font-weight:700">${m.firstName||'?'} ${m.lastName||''}</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">${badge(m.onboardingStatus||'Nouveau')}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
+          ${badge(m.onboardingStatus||'Nouveau')}
+          ${cohort?`<span class="badge badge-gold">Vague ${cohort.number}</span>`:''}
+        </div>
       </div>
       <div style="display:flex;gap:7px">
         <button style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.05);border:none;cursor:pointer;font-size:14px" onclick="closeSheet();openEdit('${id}')">✏️</button>
@@ -484,6 +504,63 @@ function confirmDelete(id,name){
   document.getElementById('confirm-overlay').classList.add('open');
 }
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');}
+
+function renderCohorts(){
+  const{cohorts,members}=window._state;
+  const el=document.getElementById('cohorts-list');
+  if(!cohorts.length){
+    el.innerHTML=`<div class="empty"><div class="empty-emoji">⚓</div><div class="empty-title">Aucune cohorte</div><div class="empty-sub">Créez votre première vague d'arrivée</div></div>`;
+    return;
+  }
+  el.innerHTML=cohorts.map(c=>{
+    const cm=members.filter(m=>m.cohortId===c.id);
+    const active=cm.filter(m=>m.onboardingStatus==='Actif').length;
+    const pct=cm.length?Math.round(active/cm.length*100):0;
+    const counts=cm.reduce((a,m)=>{a[m.onboardingStatus]=(a[m.onboardingStatus]||0)+1;return a;},{});
+    return `<div class="card card-static">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:11px">
+          <div style="width:36px;height:36px;border-radius:10px;background:var(--gold-dim);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--gold)">${c.number}</div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:600;font-size:15px">${c.name}</div>
+            ${c.date?`<div style="font-size:11px;color:var(--text3);margin-top:1px">📅 ${c.date}</div>`:''}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="font-size:13px;color:var(--text2)">👥 <strong style="color:var(--text)">${cm.length}</strong></div>
+          <button style="width:28px;height:28px;border-radius:50%;background:rgba(224,82,82,0.08);border:1px solid rgba(224,82,82,0.15);cursor:pointer;font-size:12px;color:var(--red)" onclick="confirmDeleteCohort('${c.id}','${c.name}')">×</button>
+        </div>
+      </div>
+      ${c.description?`<div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5">${c.description}</div>`:''}
+      ${cm.length?`
+        <div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px">
+            <span style="color:var(--text3)">Taux d'activation</span>
+            <span style="color:var(--gold);font-weight:500">${pct}%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${Object.entries(counts).map(([s,n])=>`<span style="padding:2px 10px;border-radius:100px;font-size:11px;background:rgba(255,255,255,0.03);color:var(--text3);border:1px solid var(--border)">${s}: <strong style="color:var(--text2)">${n}</strong></span>`).join('')}
+        </div>`:''}
+    </div>`;
+  }).join('');
+}
+function openAddCohort(){document.getElementById('cohort-modal').classList.add('open');}
+function closeCohortModal(){document.getElementById('cohort-modal').classList.remove('open');}
+async function saveCohort(){
+  const number=parseInt(document.getElementById('c-number').value);
+  const name=document.getElementById('c-name').value.trim();
+  if(!number||!name){alert('Numéro et nom requis');return;}
+  await window._db.add('cohorts',{number,name,date:document.getElementById('c-date').value,description:document.getElementById('c-desc').value});
+  closeCohortModal();
+  ['c-number','c-name','c-date','c-desc'].forEach(id=>document.getElementById(id).value='');
+}
+function confirmDeleteCohort(id,name){
+  document.getElementById('confirm-text').innerHTML=`Supprimer la cohorte <strong>${name}</strong> ? Les membres rattachés ne seront pas supprimés.`;
+  document.getElementById('confirm-ok').onclick=async()=>{await window._db.del('cohorts',id);closeConfirm();};
+  document.getElementById('confirm-overlay').classList.add('open');
+}
 </script>
 <script>
 async function runMatching(){
