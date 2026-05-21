@@ -1,16 +1,580 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0E0E10" />
-    <meta name="description" content="Capitainerie Community CRM" />
-    <title>⚓ Capitainerie CRM</title>
-    <style>
-      body { margin: 0; background: #0E0E10; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚓ Capitainerie CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0E0E10;--card:#1C1C22;--elevated:#16161A;--input:#222228;
+  --border:rgba(255,255,255,0.07);--border-gold:rgba(200,169,110,0.3);
+  --gold:#C8A96E;--gold-light:#DFC18A;--gold-dim:rgba(200,169,110,0.15);
+  --text:#F0EDE8;--text2:#9B9794;--text3:#5C5A57;
+  --green:#52B788;--orange:#E8A030;--blue:#4A90D9;--red:#E05252;
+  --nav:72px;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+#app{min-height:100vh;padding-bottom:calc(var(--nav) + 16px)}
+.page{display:none;padding:20px 16px;max-width:600px;margin:0 auto}
+.page.active{display:block}
+nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:rgba(14,14,16,0.95);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;z-index:50}
+nav::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0.4}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;color:var(--text3);transition:color 0.2s;font-family:'DM Sans',sans-serif;font-size:10px;position:relative}
+.nav-btn.active{color:var(--gold)}
+.nav-btn.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:32px;height:2px;background:var(--gold);border-radius:0 0 4px 4px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:10px;cursor:pointer;transition:all 0.2s}
+.card:hover{border-color:var(--border-gold);transform:translateY(-1px)}
+.card-static{cursor:default}.card-static:hover{transform:none;border-color:var(--border)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;transition:all 0.2s}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#0E0E10}
+.btn-secondary{background:var(--card);color:var(--text);border:1px solid var(--border)}
+.btn-gold{background:var(--gold-dim);color:var(--gold);border:1px solid var(--border-gold)}
+.btn-danger{background:rgba(224,82,82,0.15);color:var(--red);border:1px solid rgba(224,82,82,0.25)}
+.btn-full{width:100%;justify-content:center}
+.btn-sm{padding:6px 12px;font-size:13px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+label{font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em}
+input,select,textarea{background:var(--input);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;width:100%;transition:border-color 0.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+textarea{resize:vertical;line-height:1.6}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239B9794' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:calc(100% - 12px) center;padding-right:36px}
+select option{background:var(--card)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:12px;font-weight:500}
+.badge-new{background:rgba(74,144,217,0.15);color:var(--blue);border:1px solid rgba(74,144,217,0.25)}
+.badge-note{background:rgba(232,160,48,0.15);color:var(--orange);border:1px solid rgba(232,160,48,0.25)}
+.badge-active{background:rgba(82,183,136,0.15);color:var(--green);border:1px solid rgba(82,183,136,0.25)}
+.badge-gold{background:var(--gold-dim);color:var(--gold);border:1px solid var(--border-gold)}
+.badge-pending{background:rgba(232,160,48,0.15);color:var(--orange);border:1px solid rgba(232,160,48,0.25)}
+.badge-done{background:rgba(82,183,136,0.15);color:var(--green);border:1px solid rgba(82,183,136,0.25)}
+.page-header{padding-top:12px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.section-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+.section-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700}
+.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap input{padding-left:36px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3)}
+.filters{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:2px}
+.filter-btn{padding:5px 12px;border-radius:100px;font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer;border:none;background:var(--card);color:var(--text2);transition:all 0.15s;font-family:'DM Sans',sans-serif}
+.filter-btn.active{background:var(--gold);color:#0E0E10}
+.avatar{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;font-family:'Syne',sans-serif;border:2px solid rgba(255,255,255,0.08)}
+.overlay{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);display:none;align-items:flex-end}
+.overlay.open{display:flex}
+.sheet{background:var(--elevated);border-radius:20px 20px 0 0;width:100%;max-height:90vh;overflow:auto;padding-bottom:calc(var(--nav) + 16px)}
+.handle{display:flex;justify-content:center;padding:12px 0 0}
+.handle-bar{width:40px;height:4px;background:var(--border);border-radius:2px}
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--elevated);border:1px solid var(--border);border-radius:20px;width:100%;max-width:540px;max-height:90vh;overflow:auto;padding:20px 24px 24px;margin-bottom:var(--nav)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:600}
+.modal-close{background:var(--input);border:none;color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px}
+.divider{display:flex;align-items:center;gap:12px;margin:8px 0 16px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.divider span{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:12px}
+.empty-icon{width:56px;height:56px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-size:24px}
+.empty-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600}
+.empty-sub{font-size:13px;color:var(--text2);max-width:260px}
+.progress-wrap{height:4px;background:var(--input);border-radius:2px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;margin:60px auto}
+.text-block{font-size:13px;color:var(--text2);line-height:1.6;background:var(--card);padding:12px;border-radius:8px;border:1px solid var(--border)}
+.label-sm{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px}
+.suggest-box{padding:10px;background:var(--elevated);border-radius:8px;border:1px solid var(--border-gold)}
+.error-box{padding:10px 14px;background:rgba(224,82,82,0.15);border:1px solid rgba(224,82,82,0.3);border-radius:8px;font-size:13px;color:var(--red);margin-top:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div class="page active" id="page-members">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:14px">⚓</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800">Capitainerie</div>
+        <div style="font-size:12px;color:var(--text3)" id="members-count">0 membre</div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="openAddMember()">+ Ajouter</button>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Rechercher..." id="search-input" oninput="renderMembers()">
+  </div>
+  <div class="filters" id="status-filters">
+    <button class="filter-btn active" onclick="setFilter('',this)">Tous</button>
+    <button class="filter-btn" onclick="setFilter('Nouveau',this)">Nouveau</button>
+    <button class="filter-btn" onclick="setFilter('Note envoyée',this)">Note envoyée</button>
+    <button class="filter-btn" onclick="setFilter('Actif',this)">Actif</button>
+  </div>
+  <div id="members-list"></div>
+</div>
+
+<div class="page" id="page-cohorts">
+  <div style="padding-top:12px">
+    <div class="section-header">
+      <div><div class="section-title">Cohortes</div><div style="font-size:13px;color:var(--text2)">Vagues d'arrivée</div></div>
+      <button class="btn btn-primary btn-sm" onclick="openAddCohort()">+ Nouvelle vague</button>
+    </div>
+    <div id="cohorts-list"></div>
+  </div>
+</div>
+
+<div class="page" id="page-matching">
+  <div style="padding-top:12px">
+    <div class="section-header">
+      <div><div class="section-title">Matching IA</div><div style="font-size:13px;color:var(--text2)">Affinités entre membres</div></div>
+    </div>
+    <div class="card card-static" style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--gold-dim);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center">⚡</div>
+        <p style="font-size:13px;color:var(--text2)">Sélectionnez un membre pour trouver ses meilleures compatibilités</p>
+      </div>
+      <div class="field"><label>Membre de référence</label><select id="match-select"><option value="">Choisir un membre...</option></select></div>
+      <button class="btn btn-primary btn-full" onclick="runMatching()" id="match-btn">⚡ Lancer l'analyse IA</button>
+      <div id="match-error"></div>
+    </div>
+    <div id="match-results"></div>
+  </div>
+</div>
+
+<div class="page" id="page-relations">
+  <div style="padding-top:12px">
+    <div class="section-header">
+      <div><div class="section-title">Mises en relation</div><div style="font-size:13px;color:var(--text2)" id="relations-sub">0 relation</div></div>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="setRelFilter('all',this)">Toutes</button>
+      <button class="filter-btn" onclick="setRelFilter('pending',this)">En attente</button>
+      <button class="filter-btn" onclick="setRelFilter('done',this)">Réalisées</button>
+    </div>
+    <div id="relations-stats" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"></div>
+    <div id="relations-list"></div>
+  </div>
+</div>
+
+</div>
+
+<nav>
+  <button class="nav-btn active" onclick="showPage('members',this)"><span style="font-size:20px">👥</span><span>Membres</span></button>
+  <button class="nav-btn" onclick="showPage('cohorts',this)"><span style="font-size:20px">⚓</span><span>Cohortes</span></button>
+  <button class="nav-btn" onclick="showPage('matching',this)"><span style="font-size:20px">⚡</span><span>Matching IA</span></button>
+  <button class="nav-btn" onclick="showPage('relations',this)"><span style="font-size:20px">🔗</span><span>Relations</span></button>
+</nav>
+<div class="overlay" id="member-sheet">
+  <div class="sheet">
+    <div class="handle"><div class="handle-bar"></div></div>
+    <div style="padding:16px 20px 24px" id="member-sheet-content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="member-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="member-modal-title">Nouveau membre</div>
+      <button class="modal-close" onclick="closeMemberModal()">×</button>
+    </div>
+    <div id="member-form-content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="cohort-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nouvelle vague</div>
+      <button class="modal-close" onclick="document.getElementById('cohort-modal').classList.remove('open')">×</button>
+    </div>
+    <div class="field"><label>Numéro *</label><input type="number" id="cohort-number" placeholder="1"></div>
+    <div class="field"><label>Nom *</label><input type="text" id="cohort-name" placeholder="Vague Alpha"></div>
+    <div class="field"><label>Date</label><input type="date" id="cohort-date"></div>
+    <div class="field"><label>Description</label><textarea id="cohort-desc" rows="2"></textarea></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-secondary" style="flex:1" onclick="document.getElementById('cohort-modal').classList.remove('open')">Annuler</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveCohort()">Créer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <div class="modal-title">Confirmer la suppression</div>
+      <button class="modal-close" onclick="document.getElementById('confirm-modal').classList.remove('open')">×</button>
+    </div>
+    <p style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px" id="confirm-text"></p>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary" style="flex:1" onclick="document.getElementById('confirm-modal').classList.remove('open')">Annuler</button>
+      <button class="btn btn-danger" style="flex:1" id="confirm-action-btn">Supprimer</button>
+    </div>
+  </div>
+</div>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+const app = initializeApp({
+  apiKey: "AIzaSyALztD7QZAvUAKJ8I4lxqzcYKtcw5H-P00",
+  authDomain: "capitainerie-5498e.firebaseapp.com",
+  projectId: "capitainerie-5498e",
+  storageBucket: "capitainerie-5498e.firebasestorage.app",
+  messagingSenderId: "532000161107",
+  appId: "1:532000161107:web:7692a47352602aca58f5a6"
+});
+const db = getFirestore(app);
+
+window._state = { members: [], cohorts: [], matches: [], filterStatus: '', filterRelation: 'all', editingMemberId: null };
+
+onSnapshot(collection(db, 'members'), snap => {
+  window._state.members = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderMembers(); renderMatchSelect();
+});
+onSnapshot(collection(db, 'cohorts'), snap => {
+  window._state.cohorts = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b)=>(a.number||0)-(b.number||0));
+  renderCohorts();
+});
+onSnapshot(collection(db, 'matches'), snap => {
+  window._state.matches = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderRelations();
+});
+
+window._db = {
+  addMember: (data) => addDoc(collection(db, 'members'), { ...data, createdAt: serverTimestamp() }),
+  updateMember: (id, data) => updateDoc(doc(db, 'members', id), { ...data, updatedAt: serverTimestamp() }),
+  deleteMember: (id) => deleteDoc(doc(db, 'members', id)),
+  addCohort: (data) => addDoc(collection(db, 'cohorts'), { ...data, createdAt: serverTimestamp() }),
+  addMatch: (data) => addDoc(collection(db, 'matches'), { ...data, status: 'pending', createdAt: serverTimestamp() }),
+  updateMatchStatus: (id, status) => updateDoc(doc(db, 'matches', id), { status }),
+  deleteMatch: (id) => deleteDoc(doc(db, 'matches', id)),
+};
+</script>
+<script>
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+function setFilter(status, btn) {
+  window._state.filterStatus = status;
+  document.querySelectorAll('#status-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMembers();
+}
+function setRelFilter(f, btn) {
+  window._state.filterRelation = f;
+  document.querySelectorAll('#page-relations .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRelations();
+}
+const COLORS = ['#C8A96E','#4A90D9','#52B788','#9B59B6','#E67E22'];
+function avatarColor(s) { return COLORS[(s||'').charCodeAt(0) % COLORS.length]; }
+function initials(m) { return ((m.firstName||'')[0]||'?').toUpperCase() + ((m.lastName||'')[0]||'').toUpperCase(); }
+function statusBadge(s) {
+  const map = {'Nouveau':'new','Note envoyée':'note','Actif':'active','pending':'pending','done':'done'};
+  const labels = {'Nouveau':'Nouveau','Note envoyée':'Note envoyée','Actif':'Actif','pending':'En attente','done':'Fait'};
+  return `<span class="badge badge-${map[s]||'gold'}">${labels[s]||s}</span>`;
+}
+function renderMembers() {
+  const {members, filterStatus} = window._state;
+  const q = (document.getElementById('search-input')||{}).value||'';
+  const filtered = members.filter(m => {
+    const match = !q || `${m.firstName} ${m.lastName} ${m.city||''} ${m.profession||''}`.toLowerCase().includes(q.toLowerCase());
+    return match && (!filterStatus || m.onboardingStatus === filterStatus);
+  });
+  document.getElementById('members-count').textContent = `${members.length} membre${members.length!==1?'s':''}`;
+  const el = document.getElementById('members-list');
+  if (!filtered.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><div class="empty-title">Aucun membre</div><div class="empty-sub">${q?'Aucun résultat':'Ajoutez votre premier membre'}</div></div>`; return; }
+  el.innerHTML = filtered.map(m => {
+    const words = (m.threeWordsArray||[]).slice(0,3);
+    const cohort = (window._state.cohorts||[]).find(c => c.id === m.cohortId);
+    return `<div class="card" onclick="openMemberSheet('${m.id}')">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="avatar" style="background:${avatarColor(m.firstName)};color:#0E0E10">${initials(m)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-family:'Syne',sans-serif;font-weight:600;font-size:15px">${m.firstName||''} ${m.lastName||''}</span>
+            ${statusBadge(m.onboardingStatus)}
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--text2);margin-top:4px">
+            ${m.city?`<span>📍 ${m.city}</span>`:''}
+            ${m.profession?`<span>💼 ${m.profession}</span>`:''}
+            ${cohort?`<span style="color:var(--gold)">Vague ${cohort.number}</span>`:''}
+          </div>
+          ${words.length?`<div style="display:flex;gap:4px;margin-top:6px">${words.map(w=>`<span style="padding:2px 8px;background:var(--input);border-radius:100px;font-size:11px;color:var(--text3);border:1px solid var(--border)">${w}</span>`).join('')}</div>`:''}
+        </div>
+        <span style="color:var(--text3)">›</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openMemberSheet(id) {
+  const m = window._state.members.find(x => x.id === id);
+  if (!m) return;
+  const cohort = window._state.cohorts.find(c => c.id === m.cohortId);
+  const words = m.threeWordsArray || [];
+  document.getElementById('member-sheet-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+      <div class="avatar" style="width:56px;height:56px;font-size:20px;background:${avatarColor(m.firstName)};color:#0E0E10">${initials(m)}</div>
+      <div style="flex:1">
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700">${m.firstName||''} ${m.lastName||''}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          ${statusBadge(m.onboardingStatus)}
+          ${cohort?`<span class="badge badge-gold">Vague ${cohort.number}</span>`:''}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button style="width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);cursor:pointer" onclick="closeMemberSheet();openEditMember('${id}')">✏️</button>
+        <button style="width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);cursor:pointer" onclick="closeMemberSheet()">×</button>
+      </div>
+    </div>
+    ${words.length?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${words.map(w=>`<span class="badge badge-gold">${w}</span>`).join('')}</div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      ${m.city?`<div style="display:flex;gap:8px"><div style="width:28px;height:28px;border-radius:6px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0">📍</div><div><div style="font-size:11px;color:var(--text3);text-transform:uppercase">Ville</div><div style="font-size:13px">${m.city}</div></div></div>`:''}
+      ${m.profession?`<div style="display:flex;gap:8px"><div style="width:28px;height:28px;border-radius:6px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0">💼</div><div><div style="font-size:11px;color:var(--text3);text-transform:uppercase">Situation</div><div style="font-size:13px">${m.profession}</div></div></div>`:''}
+      ${m.familyStatus?`<div style="display:flex;gap:8px"><div style="width:28px;height:28px;border-radius:6px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0">❤️</div><div><div style="font-size:11px;color:var(--text3);text-transform:uppercase">Famille</div><div style="font-size:13px">${m.familyStatus}</div></div></div>`:''}
+      ${m.investmentDomains?`<div style="display:flex;gap:8px"><div style="width:28px;height:28px;border-radius:6px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0">📈</div><div><div style="font-size:11px;color:var(--text3);text-transform:uppercase">Investissement</div><div style="font-size:13px">${m.investmentDomains}</div></div></div>`:''}
+    </div>
+    ${m.trigger?`<div style="margin-bottom:12px"><div class="label-sm">Déclencheur</div><div class="text-block">${m.trigger}</div></div>`:''}
+    ${m.brings?`<div style="margin-bottom:12px"><div class="label-sm">Il/Elle apporte</div><div class="text-block">${m.brings}</div></div>`:''}
+    ${m.seeks?`<div style="margin-bottom:12px"><div class="label-sm">Il/Elle cherche</div><div class="text-block">${m.seeks}</div></div>`:''}
+    ${m.notes?`<div style="margin-bottom:12px"><div class="label-sm">Notes</div><div class="text-block">${m.notes}</div></div>`:''}
+    <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+      <button class="btn btn-danger btn-full" onclick="confirmDeleteMember('${id}','${m.firstName} ${m.lastName}')">🗑️ Supprimer ce membre</button>
+    </div>`;
+  document.getElementById('member-sheet').classList.add('open');
+}
+function closeMemberSheet() { document.getElementById('member-sheet').classList.remove('open'); }
+document.getElementById('member-sheet').addEventListener('click', e => { if (e.target === e.currentTarget) closeMemberSheet(); });
+</script>
+<script>
+function memberFormHTML(m = {}) {
+  const cohorts = window._state.cohorts || [];
+  const cohortOpts = cohorts.map(c => `<option value="${c.id}" ${m.cohortId===c.id?'selected':''}">Vague ${c.number} — ${c.name}</option>`).join('');
+  return `
+    <div class="divider"><span>Identité</span></div>
+    <div class="grid2">
+      <div class="field"><label>Prénom *</label><input id="f-firstName" value="${m.firstName||''}"></div>
+      <div class="field"><label>Nom *</label><input id="f-lastName" value="${m.lastName||''}"></div>
+      <div class="field"><label>Âge</label><input id="f-age" type="number" value="${m.age||''}"></div>
+      <div class="field"><label>Genre</label><select id="f-gender">
+        <option value="">—</option>
+        ${['Homme','Femme','Autre'].map(g=>`<option ${m.gender===g?'selected':''}>${g}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="field"><label>Ville</label><input id="f-city" value="${m.city||''}"></div>
+    <div class="divider"><span>Profil</span></div>
+    <div class="grid2">
+      <div class="field"><label>Situation pro</label><select id="f-profession">
+        <option value="">—</option>
+        ${['Salarié','Entrepreneur','Investisseur','Profession libérale','Manager / Cadre','Autre'].map(p=>`<option ${m.profession===p?'selected':''}>${p}</option>`).join('')}
+      </select></div>
+      <div class="field"><label>Statut familial</label><select id="f-familyStatus">
+        <option value="">—</option>
+        ${['Célibataire','En couple','Marié(e)','Marié(e) avec enfants','Parent solo','Autre'].map(s=>`<option ${m.familyStatus===s?'selected':''}>${s}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="field"><label>Style de vie</label><input id="f-lifestyle" value="${m.lifestyle||''}"></div>
+    <div class="divider"><span>Passions</span></div>
+    <div class="grid2">
+      <div class="field"><label>Passion 1</label><input id="f-passion1" value="${m.passion1||''}"></div>
+      <div class="field"><label>Passion 2</label><input id="f-passion2" value="${m.passion2||''}"></div>
+    </div>
+    <div class="divider"><span>Investissement</span></div>
+    <div class="field"><label>Domaines</label><input id="f-investmentDomains" value="${m.investmentDomains||''}"></div>
+    <div class="divider"><span>Communauté</span></div>
+    <div class="field"><label>Déclencheur</label><textarea id="f-trigger" rows="2">${m.trigger||''}</textarea></div>
+    <div class="field"><label>Ce qu'il/elle apporte</label><textarea id="f-brings" rows="2">${m.brings||''}</textarea></div>
+    <div class="field"><label>Ce qu'il/elle cherche</label><textarea id="f-seeks" rows="2">${m.seeks||''}</textarea></div>
+    <div class="field"><label>3 mots (séparés par virgules)</label><input id="f-threeWords" value="${(m.threeWordsArray||[]).join(', ')}"></div>
+    <div class="divider"><span>Suivi</span></div>
+    <div class="grid2">
+      <div class="field"><label>Cohorte *</label><select id="f-cohortId">
+        <option value="">Choisir...</option>${cohortOpts}
+      </select></div>
+      <div class="field"><label>Statut</label><select id="f-onboardingStatus">
+        ${['Nouveau','Note envoyée','Actif'].map(s=>`<option ${(m.onboardingStatus||'Nouveau')===s?'selected':''}>${s}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="f-notes" rows="2">${m.notes||''}</textarea></div>
+    <div style="display:flex;gap:12px;padding-top:8px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeMemberModal()">Annuler</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveMember()">${m.id?'Enregistrer':'Ajouter le membre'}</button>
+    </div>`;
+}
+function openAddMember() {
+  window._state.editingMemberId = null;
+  document.getElementById('member-modal-title').textContent = 'Nouveau membre';
+  document.getElementById('member-form-content').innerHTML = memberFormHTML();
+  document.getElementById('member-modal').classList.add('open');
+}
+function openEditMember(id) {
+  const m = window._state.members.find(x => x.id === id);
+  if (!m) return;
+  window._state.editingMemberId = id;
+  document.getElementById('member-modal-title').textContent = 'Modifier le membre';
+  document.getElementById('member-form-content').innerHTML = memberFormHTML(m);
+  document.getElementById('member-modal').classList.add('open');
+}
+function closeMemberModal() { document.getElementById('member-modal').classList.remove('open'); }
+async function saveMember() {
+  const get = id => (document.getElementById(id)||{}).value||'';
+  const firstName = get('f-firstName').trim();
+  const lastName = get('f-lastName').trim();
+  const cohortId = get('f-cohortId');
+  if (!firstName || !lastName) return alert('Prénom et nom requis');
+  const cohort = window._state.cohorts.find(c => c.id === cohortId);
+  const words = get('f-threeWords').split(',').map(w=>w.trim()).filter(Boolean);
+  const data = {
+    firstName, lastName, age: get('f-age') ? parseInt(get('f-age')) : null,
+    gender: get('f-gender'), city: get('f-city'), profession: get('f-profession'),
+    familyStatus: get('f-familyStatus'), lifestyle: get('f-lifestyle'),
+    passion1: get('f-passion1'), passion2: get('f-passion2'),
+    investmentDomains: get('f-investmentDomains'), trigger: get('f-trigger'),
+    brings: get('f-brings'), seeks: get('f-seeks'), threeWords: get('f-threeWords'),
+    threeWordsArray: words, cohortId, cohortName: cohort?.name||'',
+    cohortNumber: cohort?.number||null, onboardingStatus: get('f-onboardingStatus'),
+    notes: get('f-notes'),
+  };
+  const id = window._state.editingMemberId;
+  if (id) await window._db.updateMember(id, data);
+  else await window._db.addMember(data);
+  closeMemberModal();
+}
+function confirmDeleteMember(id, name) {
+  document.getElementById('confirm-text').innerHTML = `Êtes-vous sûr de vouloir supprimer <strong>${name}</strong> ? Cette action est irréversible.`;
+  document.getElementById('confirm-action-btn').onclick = async () => {
+    await window._db.deleteMember(id);
+    document.getElementById('confirm-modal').classList.remove('open');
+  };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+</script>
+<script>
+function renderCohorts() {
+  const {cohorts, members} = window._state;
+  const el = document.getElementById('cohorts-list');
+  if (!cohorts.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">⚓</div><div class="empty-title">Aucune cohorte</div><div class="empty-sub">Créez votre première vague</div></div>`; return; }
+  el.innerHTML = cohorts.map(c => {
+    const cm = members.filter(m => m.cohortId === c.id);
+    const active = cm.filter(m => m.onboardingStatus === 'Actif').length;
+    const pct = cm.length ? Math.round(active/cm.length*100) : 0;
+    const counts = cm.reduce((a,m) => { a[m.onboardingStatus]=(a[m.onboardingStatus]||0)+1; return a; }, {});
+    return `<div class="card card-static">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--gold-dim);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:var(--gold)">${c.number}</div>
+          <div><div style="font-family:'Syne',sans-serif;font-weight:600">${c.name}</div>${c.date?`<div style="font-size:11px;color:var(--text3)">📅 ${c.date}</div>`:''}</div>
+        </div>
+        <div style="color:var(--text2);font-size:13px">👥 <strong style="color:var(--text)">${cm.length}</strong></div>
+      </div>
+      ${cm.length?`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px"><span style="color:var(--text3)">Taux d'activation</span><span style="color:var(--gold);font-weight:600">${pct}%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div></div>`:''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${Object.entries(counts).map(([s,n])=>`<span style="padding:3px 10px;border-radius:100px;font-size:11px;background:var(--input);color:var(--text2);border:1px solid var(--border)">${s}: <strong style="color:var(--text)">${n}</strong></span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+function openAddCohort() { document.getElementById('cohort-modal').classList.add('open'); }
+async function saveCohort() {
+  const number = parseInt(document.getElementById('cohort-number').value);
+  const name = document.getElementById('cohort-name').value.trim();
+  if (!number || !name) return alert('Numéro et nom requis');
+  await window._db.addCohort({ number, name, date: document.getElementById('cohort-date').value, description: document.getElementById('cohort-desc').value });
+  document.getElementById('cohort-modal').classList.remove('open');
+  ['cohort-number','cohort-name','cohort-date','cohort-desc'].forEach(id => document.getElementById(id).value = '');
+}
+function renderMatchSelect() {
+  const sel = document.getElementById('match-select');
+  const val = sel.value;
+  sel.innerHTML = '<option value="">Choisir un membre...</option>' + window._state.members.map(m => `<option value="${m.id}" ${val===m.id?'selected':''}>${m.firstName} ${m.lastName}</option>`).join('');
+}
+async function runMatching() {
+  const id = document.getElementById('match-select').value;
+  if (!id) return;
+  const {members} = window._state;
+  const base = members.find(m => m.id === id);
+  const candidates = members.filter(m => m.id !== id);
+  if (!candidates.length) { document.getElementById('match-error').innerHTML = '<div class="error-box">Ajoutez au moins 2 membres.</div>'; return; }
+  document.getElementById('match-btn').textContent = '⏳ Analyse en cours...';
+  document.getElementById('match-btn').disabled = true;
+  document.getElementById('match-error').innerHTML = '';
+  document.getElementById('match-results').innerHTML = '<div class="spinner"></div>';
+  try {
+    const res = await fetch('/api/match', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ baseMember: base, candidates }) });
+    if (!res.ok) throw new Error('Erreur API');
+    const data = await res.json();
+    const sorted = (data.matches||[]).sort((a,b) => b.score-a.score);
+    document.getElementById('match-results').innerHTML = sorted.map(r => {
+      const m = members.find(x => x.id === r.memberId);
+      const name = m ? `${m.firstName} ${m.lastName}` : r.memberId;
+      const color = r.score >= 75 ? 'var(--green)' : r.score >= 50 ? 'var(--gold)' : 'var(--text2)';
+      return `<div class="card card-static" style="margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:600">${name}</div>
+          <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:${color}">${r.score}<span style="font-size:12px;color:var(--text3)">/100</span></div>
+        </div>
+        ${r.summary?`<p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px;font-style:italic">"${r.summary}"</p>`:''}
+        ${r.firstMessage?`<div class="suggest-box" style="margin-bottom:10px"><div style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">💬 Message suggéré</div><p style="font-size:12px;color:var(--text2);line-height:1.5">${r.firstMessage}</p></div>`:''}
+        <button class="btn btn-gold btn-full btn-sm" onclick="saveMatch('${r.memberId}',this,${r.score},'${(r.summary||'').replace(/'/g,"\\'")}','${(r.firstMessage||'').replace(/'/g,"\\'")}')">+ Créer la mise en relation</button>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('match-error').innerHTML = `<div class="error-box">⚠️ ${e.message}</div>`;
+    document.getElementById('match-results').innerHTML = '';
+  }
+  document.getElementById('match-btn').textContent = "⚡ Lancer l'analyse IA";
+  document.getElementById('match-btn').disabled = false;
+}
+async function saveMatch(memberId, btn, score, summary, firstMessage) {
+  const baseMember = window._state.members.find(m => m.id === document.getElementById('match-select').value);
+  const candidate = window._state.members.find(m => m.id === memberId);
+  if (!baseMember || !candidate) return;
+  btn.textContent = '✓ Enregistré'; btn.disabled = true;
+  await window._db.addMatch({ member1Id: baseMember.id, member1Name: `${baseMember.firstName} ${baseMember.lastName}`, member2Id: memberId, member2Name: `${candidate.firstName} ${candidate.lastName}`, score, summary, firstMessage });
+}
+function renderRelations() {
+  const {matches, filterRelation} = window._state;
+  const filtered = matches.filter(m => filterRelation === 'all' || m.status === filterRelation);
+  const pending = matches.filter(m => m.status === 'pending').length;
+  const done = matches.filter(m => m.status === 'done').length;
+  document.getElementById('relations-sub').textContent = `${matches.length} relation${matches.length!==1?'s':''} · ${done} réalisée${done!==1?'s':''}`;
+  document.getElementById('relations-stats').innerHTML = matches.length ? `
+    <div class="card card-static" style="margin:0"><div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--orange)">${pending}</div><div style="font-size:12px;color:var(--text3)">En attente</div></div>
+    <div class="card card-static" style="margin:0"><div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--green)">${done}</div><div style="font-size:12px;color:var(--text3)">Réalisées</div></div>` : '';
+  const el = document.getElementById('relations-list');
+  if (!filtered.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">🔗</div><div class="empty-title">Aucune mise en relation</div><div class="empty-sub">Utilisez le matching IA pour créer des mises en relation</div></div>`; return; }
+  el.innerHTML = filtered.map(r => {
+    const isDone = r.status === 'done';
+    return `<div class="card card-static" style="margin-bottom:10px;opacity:${isDone?0.8:1}">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="min-width:44px;height:44px;border-radius:8px;background:${isDone?'rgba(82,183,136,0.15)':'var(--gold-dim)'};border:1px solid ${isDone?'rgba(82,183,136,0.3)':'var(--border-gold)'};display:flex;align-items:center;justify-content:center;flex-direction:column">
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:${isDone?'var(--green)':'var(--gold)'}">${r.score||'—'}</span>
+          <span style="font-size:9px;color:var(--text3)">/100</span>
+        </div>
+        <div style="flex:1">
+          <div style="font-family:'Syne',sans-serif;font-weight:600;font-size:14px">${r.member1Name||''} ↔ ${r.member2Name||''}</div>
+          <div style="margin-top:4px">${statusBadge(r.status)}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button style="width:32px;height:32px;border-radius:50%;background:${isDone?'rgba(82,183,136,0.2)':'var(--input)'};border:none;cursor:pointer;font-size:14px" onclick="toggleMatch('${r.id}','${r.status}')">${isDone?'✓':'🕐'}</button>
+          <button style="width:32px;height:32px;border-radius:50%;background:var(--input);border:none;cursor:pointer;font-size:13px" onclick="confirmDeleteMatch('${r.id}')">🗑️</button>
+        </div>
+      </div>
+      ${r.summary?`<p style="font-size:12px;color:var(--text2);line-height:1.6;margin-top:10px;font-style:italic">"${r.summary}"</p>`:''}
+    </div>`;
+  }).join('');
+}
+async function toggleMatch(id, status) { await window._db.updateMatchStatus(id, status === 'done' ? 'pending' : 'done'); }
+function confirmDeleteMatch(id) {
+  document.getElementById('confirm-text').innerHTML = 'Supprimer cette mise en relation ?';
+  document.getElementById('confirm-action-btn').onclick = async () => { await window._db.deleteMatch(id); document.getElementById('confirm-modal').classList.remove('open'); };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+</script>
+</body>
 </html>
