@@ -44,7 +44,6 @@ textarea{resize:none;line-height:1.6}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%233E3C3A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:calc(100% - 16px) center;padding-right:40px}
 select option{background:#1C1C1F}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:15px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;transition:all 0.15s}
 .btn:active{transform:scale(0.98)}
 .btn-gold{background:linear-gradient(135deg,#C5A568,#D4B87A);color:#080808}
@@ -262,16 +261,16 @@ select option{background:#1C1C1F}
   </div>
 </div>
 
-<!-- MODAL SUIVI LIEN -->
+<!-- MODAL SUIVI -->
 <div class="modal-overlay" id="suivi-modal" onclick="if(event.target===this)closeSuiviModal()">
   <div class="modal">
     <div class="modal-head">
       <div class="modal-title">Suivi de la mise en relation</div>
       <button class="modal-x" onclick="closeSuiviModal()">×</button>
     </div>
-    <div class="modal-body" id="suivi-body">
+    <div class="modal-body">
       <div class="field"><span class="field-label">Date de relance</span><input type="date" id="s-relance"></div>
-      <div class="field"><span class="field-label">Résultat de la mise en relation</span><textarea id="s-result" rows="4" placeholder="Que s'est-il passé ? Ont-ils échangé ? Ça a donné quoi ?"></textarea></div>
+      <div class="field"><span class="field-label">Résultat</span><textarea id="s-result" rows="4" placeholder="Que s'est-il passé ? Ont-ils échangé ? Ça a donné quoi ?"></textarea></div>
       <div style="padding:8px 0 6px;display:flex;gap:10px">
         <button class="btn btn-ghost btn-sm" style="flex:1" onclick="closeSuiviModal()">Annuler</button>
         <button class="btn btn-gold btn-sm" style="flex:2" onclick="saveSuivi()">Enregistrer</button>
@@ -476,118 +475,120 @@ function selectRole(role){
   if(btn){btn.classList.add('selected');btn.querySelector('.role-check').textContent='✓';}
   window._selectedRole=role;
 }
-function formHTML(m,submitFn,submitLabel){
+
+function formHTML(m,formId,submitFn,submitLabel){
   window._selectedRole=m.communityRole||'';
-  const sel=(f,opts)=>`<select id="f-${f}"><option value="">—</option>${opts.map(o=>`<option value="${o}" ${(m[f]||'')===o?'selected':''}>${o}</option>`).join('')}</select>`;
+  const sel=(f,opts)=>`<select id="${formId}-${f}"><option value="">—</option>${opts.map(o=>`<option value="${o}" ${(m[f]||'')===o?'selected':''}>${o}</option>`).join('')}</select>`;
   const isHelp=m.communityRole==="Je cherche de l'aide";
   const isHelper=m.communityRole==='Je veux aider';
   const isBoth=m.communityRole==='Les deux';
   return `
     <div class="field"><span class="field-label">Cohorte</span>
-      <select id="f-cohortId"><option value="">Créez d'abord une cohorte</option>
+      <select id="${formId}-cohortId"><option value="">Créez d'abord une cohorte</option>
         ${(window._state.cohorts||[]).map(c=>`<option value="${c.id}" ${(m.cohortId||'')===c.id?'selected':''}>Vague ${c.number} — ${c.name}</option>`).join('')}
       </select>
     </div>
     <div class="grid2">
-      <div class="field"><span class="field-label">Prénom</span><input id="f-firstName" value="${m.firstName||''}" placeholder="Thomas"></div>
-      <div class="field"><span class="field-label">Nom</span><input id="f-lastName" value="${m.lastName||''}" placeholder="Dupont"></div>
+      <div class="field"><span class="field-label">Prénom</span><input id="${formId}-firstName" value="${m.firstName||''}" placeholder="Thomas"></div>
+      <div class="field"><span class="field-label">Nom</span><input id="${formId}-lastName" value="${m.lastName||''}" placeholder="Dupont"></div>
     </div>
     <div class="grid2">
-      <div class="field"><span class="field-label">Âge</span><input id="f-age" type="number" value="${m.age||''}" placeholder="34"></div>
-      <div class="field"><span class="field-label">Genre</span>${sel('gender',['Homme','Femme','Autre'])}</div>
+      <div class="field"><span class="field-label">Âge</span><input id="${formId}-age" type="number" value="${m.age||''}" placeholder="34"></div>
+      <div class="field"><span class="field-label">Genre</span><select id="${formId}-gender"><option value="">—</option>${['Homme','Femme','Autre'].map(o=>`<option value="${o}" ${(m.gender||'')===o?'selected':''}>${o}</option>`).join('')}</select></div>
     </div>
-    <div class="field"><span class="field-label">Ville</span><input id="f-city" value="${m.city||''}" placeholder="Lyon"></div>
-    <div class="field"><span class="field-label">Situation professionnelle</span><input id="f-profession" value="${m.profession||''}" placeholder="Entrepreneur, salarié, en transition..."></div>
+    <div class="field"><span class="field-label">Ville</span><input id="${formId}-city" value="${m.city||''}" placeholder="Lyon"></div>
+    <div class="field"><span class="field-label">Situation professionnelle</span><input id="${formId}-profession" value="${m.profession||''}" placeholder="Entrepreneur, salarié..."></div>
     <div class="grid2">
-      <div class="field"><span class="field-label">Salaire annuel</span><input id="f-salary" value="${m.salary||''}" placeholder="50 000 €"></div>
-      <div class="field"><span class="field-label">Patrimoine</span><input id="f-patrimoine" value="${m.patrimoine||''}" placeholder="200 000 €"></div>
+      <div class="field"><span class="field-label">Salaire annuel</span><input id="${formId}-salary" value="${m.salary||''}" placeholder="50 000 €"></div>
+      <div class="field"><span class="field-label">Patrimoine</span><input id="${formId}-patrimoine" value="${m.patrimoine||''}" placeholder="200 000 €"></div>
     </div>
-    <div class="field"><span class="field-label">Statut familial</span>${sel('familyStatus',['Célibataire','En couple','Marié(e)','Marié(e) avec enfants','Parent solo','Autre'])}</div>
-    <div class="field"><span class="field-label">Déclencheur d'entrée</span><textarea id="f-trigger" rows="2" placeholder="La vraie raison, en une phrase...">${m.trigger||''}</textarea></div>
-    <div class="field"><span class="field-label">Ce qu'il/elle apporte</span><textarea id="f-brings" rows="2" placeholder="Réseau, compétences, énergie...">${m.brings||''}</textarea></div>
-    <div class="field"><span class="field-label">Ce qu'il/elle cherche</span><textarea id="f-seeks" rows="2" placeholder="Clarté, réseau, passage à l'action...">${m.seeks||''}</textarea></div>
-    <div class="field"><span class="field-label">3 mots</span><input id="f-threeWords" value="${(m.threeWordsArray||[]).join(', ')}" placeholder="Ambitieux, structuré, intuitif"></div>
-    <div class="field"><span class="field-label">Domaines d'investissement</span><input id="f-investmentDomains" value="${m.investmentDomains||''}" placeholder="Immobilier, Bourse..."></div>
-    <div class="field"><span class="field-label">Statut onboarding</span>${sel('onboardingStatus',['Nouveau','Note envoyée'])}</div>
+    <div class="field"><span class="field-label">Statut familial</span><select id="${formId}-familyStatus"><option value="">—</option>${['Célibataire','En couple','Marié(e)','Marié(e) avec enfants','Parent solo','Autre'].map(o=>`<option value="${o}" ${(m.familyStatus||'')===o?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="field"><span class="field-label">Déclencheur d'entrée</span><textarea id="${formId}-trigger" rows="2" placeholder="La vraie raison, en une phrase...">${m.trigger||''}</textarea></div>
+    <div class="field"><span class="field-label">Ce qu'il/elle apporte</span><textarea id="${formId}-brings" rows="2" placeholder="Réseau, compétences, énergie...">${m.brings||''}</textarea></div>
+    <div class="field"><span class="field-label">Ce qu'il/elle cherche</span><textarea id="${formId}-seeks" rows="2" placeholder="Clarté, réseau, passage à l'action...">${m.seeks||''}</textarea></div>
+    <div class="field"><span class="field-label">3 mots</span><input id="${formId}-threeWords" value="${(m.threeWordsArray||[]).join(', ')}" placeholder="Ambitieux, structuré, intuitif"></div>
+    <div class="field"><span class="field-label">Domaines d'investissement</span><input id="${formId}-investmentDomains" value="${m.investmentDomains||''}" placeholder="Immobilier, Bourse..."></div>
+    <div class="field"><span class="field-label">Statut onboarding</span><select id="${formId}-onboardingStatus"><option value="">—</option>${['Nouveau','Note envoyée'].map(o=>`<option value="${o}" ${(m.onboardingStatus||'Nouveau')===o?'selected':''}>${o}</option>`).join('')}</select></div>
     <div class="field">
       <span class="field-label">Rôle dans la communauté</span>
       <button class="role-btn ${isHelp?'selected':''}" data-role="Je cherche de l'aide" onclick="selectRole('Je cherche de l\'aide')">
         <span class="role-emoji">🙋</span>
-        <div class="role-text">
-          <div class="role-title">Je cherche de l'aide</div>
-          <div class="role-sub">Je veux bénéficier de l'expérience des autres membres</div>
-        </div>
+        <div class="role-text"><div class="role-title">Je cherche de l'aide</div><div class="role-sub">Je veux bénéficier de l'expérience des autres</div></div>
         <div class="role-check">${isHelp?'✓':''}</div>
       </button>
       <button class="role-btn ${isHelper?'selected':''}" data-role="Je veux aider" onclick="selectRole('Je veux aider')">
         <span class="role-emoji">🤝</span>
-        <div class="role-text">
-          <div class="role-title">Je veux aider</div>
-          <div class="role-sub">Je partage mon expérience et mes ressources</div>
-        </div>
+        <div class="role-text"><div class="role-title">Je veux aider</div><div class="role-sub">Je partage mon expérience et mes ressources</div></div>
         <div class="role-check">${isHelper?'✓':''}</div>
       </button>
       <button class="role-btn ${isBoth?'selected':''}" data-role="Les deux" onclick="selectRole('Les deux')">
         <span class="role-emoji">🔄</span>
-        <div class="role-text">
-          <div class="role-title">Les deux</div>
-          <div class="role-sub">Je donne et je reçois selon les opportunités</div>
-        </div>
+        <div class="role-text"><div class="role-title">Les deux</div><div class="role-sub">Je donne et je reçois selon les opportunités</div></div>
         <div class="role-check">${isBoth?'✓':''}</div>
       </button>
     </div>
-    <div class="field"><span class="field-label">Notes complémentaires</span><textarea id="f-notes" rows="2" placeholder="Infos supplémentaires...">${m.notes||''}</textarea></div>
-    <div style="padding:8px 0 6px"><button class="btn btn-gold" onclick="${submitFn}()">${submitLabel}</button></div>`;
+    <div class="field"><span class="field-label">Notes complémentaires</span><textarea id="${formId}-notes" rows="2" placeholder="Infos supplémentaires...">${m.notes||''}</textarea></div>
+    <div style="padding:8px 0 6px"><button class="btn btn-gold" onclick="${submitFn}('${formId}')">${submitLabel}</button></div>`;
 }
-function getForm(){
-  const g=id=>(document.getElementById(id)||{}).value||'';
-  const cohortId=g('f-cohortId');
+
+function getFormData(formId){
+  const g=id=>(document.getElementById(`${formId}-${id}`)||{}).value||'';
+  const cohortId=g('cohortId');
   const cohort=(window._state.cohorts||[]).find(c=>c.id===cohortId);
-  const words=g('f-threeWords').split(',').map(w=>w.trim()).filter(Boolean);
+  const words=g('threeWords').split(',').map(w=>w.trim()).filter(Boolean);
   return{
-    firstName:g('f-firstName').trim(),
-    lastName:g('f-lastName').trim(),
-    age:g('f-age')?parseInt(g('f-age')):null,
-    gender:g('f-gender'),city:g('f-city'),profession:g('f-profession'),
-    salary:g('f-salary'),patrimoine:g('f-patrimoine'),
-    trigger:g('f-trigger'),brings:g('f-brings'),seeks:g('f-seeks'),
-    threeWords:g('f-threeWords'),threeWordsArray:words,
-    investmentDomains:g('f-investmentDomains'),familyStatus:g('f-familyStatus'),
-    onboardingStatus:g('f-onboardingStatus')||'Nouveau',
+    firstName:g('firstName').trim(),
+    lastName:g('lastName').trim(),
+    age:g('age')?parseInt(g('age')):null,
+    gender:g('gender'),city:g('city'),profession:g('profession'),
+    salary:g('salary'),patrimoine:g('patrimoine'),
+    trigger:g('trigger'),brings:g('brings'),seeks:g('seeks'),
+    threeWords:g('threeWords'),threeWordsArray:words,
+    investmentDomains:g('investmentDomains'),familyStatus:g('familyStatus'),
+    onboardingStatus:g('onboardingStatus')||'Nouveau',
     communityRole:window._selectedRole||'',
     cohortId,cohortName:cohort?.name||'',cohortNumber:cohort?.number||null,
-    notes:g('f-notes'),
+    notes:g('notes'),
   };
 }
+
 function renderAddForm(){
   window._selectedRole='';
-  document.getElementById('add-form').innerHTML=formHTML({},'submitAdd','Ajouter le membre');
+  document.getElementById('add-form').innerHTML=formHTML({},'add','submitAdd','Ajouter le membre');
 }
-async function submitAdd(){
-  const data=getForm();
+
+async function submitAdd(formId){
+  const data=getFormData(formId||'add');
   if(!data.firstName){alert('Le prénom est requis');return;}
   await window._db.add('members',data);
+  window._selectedRole='';
   showPage('members',document.getElementById('nav-members'));
-  renderAddForm();
+  setTimeout(()=>renderAddForm(),300);
 }
+
 function openEdit(id){
   const m=window._state.members.find(x=>x.id===id);if(!m)return;
   window._state.editingId=id;
-  document.getElementById('edit-body').innerHTML=formHTML(m,'submitEdit','Enregistrer les modifications');
+  document.getElementById('edit-body').innerHTML=formHTML(m,'edit','submitEdit','Enregistrer les modifications');
   document.getElementById('edit-modal').classList.add('open');
 }
 function closeEdit(){document.getElementById('edit-modal').classList.remove('open');}
-async function submitEdit(){
+
+async function submitEdit(formId){
   const id=window._state.editingId;if(!id)return;
-  await window._db.update('members',id,getForm());
+  const data=getFormData(formId||'edit');
+  if(!data.firstName){alert('Le prénom est requis');return;}
+  await window._db.update('members',id,data);
   closeEdit();
 }
+
 function confirmDelete(id,name){
   document.getElementById('confirm-text').innerHTML=`Supprimer <strong>${name.trim()}</strong> ? Cette action est irréversible.`;
   document.getElementById('confirm-ok').onclick=async()=>{await window._db.del('members',id);closeConfirm();closeSheet();};
   document.getElementById('confirm-overlay').classList.add('open');
 }
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');}
+
 function renderCohorts(){
   const{cohorts,members}=window._state;
   const el=document.getElementById('cohorts-list');
@@ -597,8 +598,6 @@ function renderCohorts(){
   }
   el.innerHTML=cohorts.map(c=>{
     const cm=members.filter(m=>m.cohortId===c.id);
-    const active=cm.filter(m=>m.onboardingStatus==='Note envoyée').length;
-    const pct=cm.length?Math.round(active/cm.length*100):0;
     const counts=cm.reduce((a,m)=>{a[m.onboardingStatus]=(a[m.onboardingStatus]||0)+1;return a;},{});
     return `<div class="card card-static">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
@@ -615,10 +614,7 @@ function renderCohorts(){
         </div>
       </div>
       ${c.description?`<div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5">${c.description}</div>`:''}
-      ${cm.length?`
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${Object.entries(counts).map(([s,n])=>`<span style="padding:2px 10px;border-radius:100px;font-size:11px;background:rgba(255,255,255,0.03);color:var(--text3);border:1px solid var(--border)">${s}: <strong style="color:var(--text2)">${n}</strong></span>`).join('')}
-        </div>`:''}
+      ${cm.length?`<div style="display:flex;gap:6px;flex-wrap:wrap">${Object.entries(counts).map(([s,n])=>`<span style="padding:2px 10px;border-radius:100px;font-size:11px;background:rgba(255,255,255,0.03);color:var(--text3);border:1px solid var(--border)">${s}: <strong style="color:var(--text2)">${n}</strong></span>`).join('')}</div>`:''}
     </div>`;
   }).join('');
 }
@@ -724,11 +720,11 @@ function renderRelations(){
           <div style="font-family:'Syne',sans-serif;font-weight:600;font-size:14px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.member1Name||''} ↔ ${r.member2Name||''}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
             ${badge(r.status)}
-            ${r.relanceDate?`<span style="font-size:11px;color:${relanceDepassee?'var(--red)':'var(--text3)'}">📅 Relance : ${r.relanceDate}</span>`:''}
+            ${r.relanceDate?`<span style="font-size:11px;color:${relanceDepassee?'var(--red)':'var(--text3)'}">📅 ${r.relanceDate}</span>`:''}
           </div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0">
-          <button style="width:32px;height:32px;border-radius:50%;background:rgba(200,169,110,0.08);border:1px solid var(--border-gold);cursor:pointer;font-size:13px;color:var(--gold)" onclick="openSuivi('${r.id}','${r.relanceDate||''}','${(r.result||'').replace(/'/g,"\\'")}')">📝</button>
+          <button style="width:32px;height:32px;border-radius:50%;background:rgba(200,169,110,0.08);border:1px solid var(--border-gold);cursor:pointer;font-size:13px" onclick="openSuivi('${r.id}','${r.relanceDate||''}','${(r.result||'').replace(/'/g,"\\'")}')">📝</button>
           <button style="width:32px;height:32px;border-radius:50%;background:${isDone?'rgba(82,183,136,0.1)':'rgba(255,255,255,0.04)'};border:1px solid ${isDone?'rgba(82,183,136,0.18)':'var(--border)'};cursor:pointer;font-size:13px;color:${isDone?'var(--green)':'var(--text3)'}" onclick="toggleRel('${r.id}','${r.status}')">${isDone?'✓':'○'}</button>
           <button style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer;font-size:15px;color:var(--text3)" onclick="confirmDeleteRel('${r.id}')">×</button>
         </div>
@@ -754,9 +750,7 @@ function openSuivi(id,relanceDate,result){
 function closeSuiviModal(){document.getElementById('suivi-modal').classList.remove('open');}
 async function saveSuivi(){
   const id=window._state.suiviId;if(!id)return;
-  const relanceDate=document.getElementById('s-relance').value;
-  const result=document.getElementById('s-result').value;
-  await window._db.update('matches',id,{relanceDate,result});
+  await window._db.update('matches',id,{relanceDate:document.getElementById('s-relance').value,result:document.getElementById('s-result').value});
   closeSuiviModal();
 }
 renderAddForm();
