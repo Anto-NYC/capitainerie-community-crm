@@ -337,7 +337,11 @@ function setRelFilter(f,btn){
 }
 const COLORS=[['#C8A96E','#080808'],['#4A90D9','#fff'],['#52B788','#080808'],['#9B59B6','#fff'],['#E67E22','#080808']];
 function aC(s){return COLORS[(s||'x').charCodeAt(0)%COLORS.length];}
-function ini(m){return((m.firstName||'?')[0]+(m.lastName||'')[0]).toUpperCase();}
+function ini(m){
+  const f=(m.firstName||'?')[0]||'';
+  const l=(m.lastName||'')[0]||'';
+  return (f+l).toUpperCase();
+}
 function badge(s){
   const map={'Nouveau':'new','Note envoyée':'note','Actif':'active','pending':'pending','done':'done'};
   const lbl={'Nouveau':'Nouveau','Note envoyée':'Note envoyée','Actif':'Actif','pending':'En attente','done':'Fait'};
@@ -365,9 +369,10 @@ function renderMembers(){
   el.innerHTML=filtered.map(m=>{
     const [bg,fg]=aC(m.firstName);
     const words=(m.threeWordsArray||[]).slice(0,3);
+    const avatarText=ini(m);
     return `<div class="card fu" onclick="openSheet('${m.id}')">
       <div style="display:flex;align-items:center;gap:13px">
-        <div style="width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Syne',sans-serif;background:${bg};color:${fg}">${ini(m)}</div>
+        <div style="width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Syne',sans-serif;background:${bg};color:${fg};overflow:hidden;text-overflow:clip;white-space:nowrap">${avatarText}</div>
         <div style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap">
             <span style="font-family:'Syne',sans-serif;font-weight:600;font-size:15px">${m.firstName||'?'} ${m.lastName||''}</span>
@@ -389,7 +394,7 @@ function openSheet(id){
   const cohort=window._state.cohorts.find(c=>c.id===m.cohortId);
   document.getElementById('sheet-body').innerHTML=`
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
-      <div style="width:52px;height:52px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;font-family:'Syne',sans-serif;background:${bg};color:${fg}">${ini(m)}</div>
+      <div style="width:52px;height:52px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;font-family:'Syne',sans-serif;background:${bg};color:${fg};overflow:hidden">${ini(m)}</div>
       <div style="flex:1">
         <div style="font-family:'Syne',sans-serif;font-size:19px;font-weight:700">${m.firstName||'?'} ${m.lastName||''}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
@@ -424,15 +429,20 @@ function closeSheet(){document.getElementById('member-sheet').classList.remove('
 </script>
 <script>
 function selectRole(role){
-  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.role-btn').forEach(b=>{
+    b.classList.remove('selected');
+    b.querySelector('.role-check').textContent='';
+  });
   const btn=document.querySelector(`.role-btn[data-role="${role}"]`);
   if(btn){btn.classList.add('selected');btn.querySelector('.role-check').textContent='✓';}
-  document.querySelectorAll('.role-btn:not(.selected) .role-check').forEach(c=>c.textContent='');
   window._selectedRole=role;
 }
 function formHTML(m,submitFn,submitLabel){
   window._selectedRole=m.communityRole||'';
   const sel=(f,opts)=>`<select id="f-${f}"><option value="">—</option>${opts.map(o=>`<option value="${o}" ${(m[f]||'')===o?'selected':''}>${o}</option>`).join('')}</select>`;
+  const isHelp=m.communityRole==="Je cherche de l'aide";
+  const isHelper=m.communityRole==='Je veux aider';
+  const isBoth=m.communityRole==='Les deux';
   return `
     <div class="field"><span class="field-label">Cohorte</span>
       <select id="f-cohortId"><option value="">Créez d'abord une cohorte</option>
@@ -457,29 +467,29 @@ function formHTML(m,submitFn,submitLabel){
     <div class="field"><span class="field-label">Statut onboarding</span>${sel('onboardingStatus',['Nouveau','Note envoyée','Actif'])}</div>
     <div class="field">
       <span class="field-label">Rôle dans la communauté</span>
-      <button class="role-btn ${m.communityRole==='Je cherche de l\'aide'?'selected':''}" data-role="Je cherche de l'aide" onclick="selectRole('Je cherche de l\'aide')">
+      <button class="role-btn ${isHelp?'selected':''}" data-role="Je cherche de l'aide" onclick="selectRole('Je cherche de l\'aide')">
         <span class="role-emoji">🙋</span>
         <div class="role-text">
           <div class="role-title">Je cherche de l'aide</div>
           <div class="role-sub">Je veux bénéficier de l'expérience des autres membres</div>
         </div>
-        <div class="role-check">${m.communityRole==='Je cherche de l\'aide'?'✓':''}</div>
+        <div class="role-check">${isHelp?'✓':''}</div>
       </button>
-      <button class="role-btn ${m.communityRole==='Je veux aider'?'selected':''}" data-role="Je veux aider" onclick="selectRole('Je veux aider')">
+      <button class="role-btn ${isHelper?'selected':''}" data-role="Je veux aider" onclick="selectRole('Je veux aider')">
         <span class="role-emoji">🤝</span>
         <div class="role-text">
           <div class="role-title">Je veux aider</div>
           <div class="role-sub">Je partage mon expérience et mes ressources</div>
         </div>
-        <div class="role-check">${m.communityRole==='Je veux aider'?'✓':''}</div>
+        <div class="role-check">${isHelper?'✓':''}</div>
       </button>
-      <button class="role-btn ${m.communityRole==='Les deux'?'selected':''}" data-role="Les deux" onclick="selectRole('Les deux')">
+      <button class="role-btn ${isBoth?'selected':''}" data-role="Les deux" onclick="selectRole('Les deux')">
         <span class="role-emoji">🔄</span>
         <div class="role-text">
           <div class="role-title">Les deux</div>
           <div class="role-sub">Je donne et je reçois selon les opportunités</div>
         </div>
-        <div class="role-check">${m.communityRole==='Les deux'?'✓':''}</div>
+        <div class="role-check">${isBoth?'✓':''}</div>
       </button>
     </div>
     <div class="field"><span class="field-label">Notes complémentaires</span><textarea id="f-notes" rows="2" placeholder="Infos supplémentaires...">${m.notes||''}</textarea></div>
@@ -597,8 +607,8 @@ async function runMatching(){
   const candidates=members.filter(m=>{
     if(m.id===id) return false;
     if(!m.communityRole) return false;
-    if(base.communityRole==='Je cherche de l\'aide') return m.communityRole==='Je veux aider'||m.communityRole==='Les deux';
-    if(base.communityRole==='Je veux aider') return m.communityRole==='Je cherche de l\'aide'||m.communityRole==='Les deux';
+    if(base.communityRole==="Je cherche de l'aide") return m.communityRole==='Je veux aider'||m.communityRole==='Les deux';
+    if(base.communityRole==='Je veux aider') return m.communityRole==="Je cherche de l'aide"||m.communityRole==='Les deux';
     return true;
   });
   if(!candidates.length){
