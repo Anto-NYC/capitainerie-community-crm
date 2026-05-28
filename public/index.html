@@ -21,28 +21,20 @@ body{color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-heig
 #app{min-height:100vh;padding-bottom:calc(var(--nav) + var(--safe) + 20px)}
 .page{display:none;padding:0 22px;max-width:620px;margin:0 auto}
 .page.active{display:block}
-
-/* Header */
 .header{padding:52px 0 28px;display:flex;align-items:flex-start;justify-content:space-between}
 .header-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:600;color:var(--gold);letter-spacing:0.12em;text-transform:uppercase}
 .header-sub{font-size:11px;color:var(--text3);margin-top:3px;letter-spacing:0.04em;font-weight:300}
 .header-num{font-family:'Syne',sans-serif;font-size:20px;font-weight:600;color:var(--text);line-height:1;text-align:right}
 .header-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;font-weight:400;text-align:right}
-
-/* Nav */
 nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(10,10,12,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding-bottom:var(--safe)}
 .nav-inner{display:flex;height:var(--nav);max-width:620px;margin:0 auto}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;color:var(--text3);transition:color 0.2s;font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:0.03em;position:relative;padding:0;font-weight:400}
 .nav-btn.active{color:var(--gold)}
 .nav-dot{position:absolute;top:0;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:0;transition:opacity 0.2s;margin-top:2px}
 .nav-btn.active .nav-dot{opacity:1}
-
-/* Cards */
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:8px;transition:all 0.15s;cursor:pointer}
 .card:active{transform:scale(0.985);background:var(--elevated)}
 .card-static{cursor:default}.card-static:active{transform:none}
-
-/* Inputs */
 .field{margin-bottom:13px}
 .field-label{font-size:12px;color:var(--text2);letter-spacing:0.03em;margin-bottom:6px;display:block;font-weight:400}
 input,select,textarea{width:100%;background:var(--input);border:1px solid var(--border);border-radius:13px;padding:13px 16px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;appearance:none;-webkit-appearance:none;font-weight:400}
@@ -52,8 +44,6 @@ textarea{resize:none;line-height:1.6}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%233E3C3A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:calc(100% - 16px) center;padding-right:40px}
 select option{background:#1C1C1F}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-
-/* Buttons */
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:15px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;transition:all 0.15s}
 .btn:active{transform:scale(0.98)}
 .btn-gold{background:linear-gradient(135deg,#C5A568,#D4B87A);color:#080808}
@@ -61,8 +51,6 @@ select option{background:#1C1C1F}
 .btn-ghost{background:var(--input);color:var(--text2);border:1px solid var(--border)}
 .btn-danger{background:rgba(224,82,82,0.1);color:var(--red);border:1px solid rgba(224,82,82,0.18)}
 .btn-sm{padding:10px 18px;font-size:13px;border-radius:12px;width:auto}
-
-/* Badges */
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500}
 .badge-new{background:rgba(74,144,217,0.1);color:#7ABFFF;border:1px solid rgba(74,144,217,0.18)}
 .badge-note{background:rgba(232,160,48,0.1);color:#F0B84A;border:1px solid rgba(232,160,48,0.18)}
@@ -70,27 +58,22 @@ select option{background:#1C1C1F}
 .badge-gold{background:var(--gold-dim);color:var(--gold);border:1px solid var(--border-gold)}
 .badge-pending{background:rgba(232,160,48,0.1);color:#F0B84A;border:1px solid rgba(232,160,48,0.18)}
 .badge-done{background:rgba(82,183,136,0.1);color:#72D4A4;border:1px solid rgba(82,183,136,0.18)}
-
-/* Search */
+.badge-help{background:rgba(74,144,217,0.1);color:#7ABFFF;border:1px solid rgba(74,144,217,0.18)}
+.badge-helper{background:rgba(82,183,136,0.1);color:#72D4A4;border:1px solid rgba(82,183,136,0.18)}
+.badge-both{background:var(--gold-dim);color:var(--gold);border:1px solid var(--border-gold)}
 .search-wrap{position:relative;margin-bottom:18px}
 .search-wrap input{padding-left:42px}
 .search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
-
-/* Filters */
 .filters{display:flex;gap:7px;margin-bottom:18px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
 .filters::-webkit-scrollbar{display:none}
 .chip{padding:6px 15px;border-radius:100px;font-size:12px;white-space:nowrap;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text3);transition:all 0.15s;font-family:'DM Sans',sans-serif;font-weight:400}
 .chip.active{background:var(--gold);color:#080808;border-color:var(--gold);font-weight:500}
-
-/* Sheet */
 .overlay{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);display:none;align-items:flex-end}
 .overlay.open{display:flex}
 .sheet{background:var(--elevated);border-radius:22px 22px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding-bottom:calc(var(--nav) + var(--safe) + 24px)}
 .sheet-handle{display:flex;justify-content:center;padding:13px 0 2px}
 .sheet-bar{width:32px;height:3px;background:rgba(255,255,255,0.08);border-radius:2px}
 .sheet-body{padding:14px 22px 20px}
-
-/* Modal */
 .modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.65);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:var(--elevated);border-radius:22px 22px 0 0;width:100%;max-width:600px;max-height:94vh;overflow-y:auto;padding-bottom:calc(var(--nav) + var(--safe) + 24px)}
@@ -98,24 +81,27 @@ select option{background:#1C1C1F}
 .modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:600}
 .modal-x{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.05);border:none;color:var(--text2);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center}
 .modal-body{padding:16px 22px 0}
-
-/* Confirm */
 .confirm-overlay{position:fixed;inset:0;z-index:110;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:24px}
 .confirm-overlay.open{display:flex}
 .confirm-box{background:var(--elevated);border:1px solid var(--border);border-radius:18px;width:100%;max-width:340px;padding:22px}
-
-/* Empty */
 .empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:56px 20px;text-align:center}
 .empty-emoji{font-size:36px}
 .empty-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600}
 .empty-sub{font-size:13px;color:var(--text2);max-width:220px;line-height:1.5}
-
-/* Misc */
 .progress-track{height:2px;background:rgba(255,255,255,0.05);border-radius:1px;overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:1px;transition:width 0.6s}
 .spinner{width:24px;height:24px;border:2px solid rgba(255,255,255,0.07);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;margin:44px auto}
 .text-block{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:11px;padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.65}
 .section-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;font-weight:500}
+.role-btn{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:13px;border:1px solid var(--border);background:transparent;cursor:pointer;transition:all 0.15s;width:100%;margin-bottom:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text2);text-align:left}
+.role-btn.selected{border-color:var(--gold);background:var(--gold-dim);color:var(--text)}
+.role-btn .role-emoji{font-size:20px;flex-shrink:0}
+.role-btn .role-text{flex:1}
+.role-btn .role-title{font-weight:500;color:var(--text);font-size:14px}
+.role-btn .role-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.role-btn.selected .role-sub{color:var(--text2)}
+.role-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+.role-btn.selected .role-check{background:var(--gold);border-color:var(--gold);color:#080808}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .fu{animation:fadeUp 0.25s ease forwards}
@@ -203,7 +189,7 @@ select option{background:#1C1C1F}
 
 </div>
 
-<!-- NAV 5 onglets -->
+<!-- NAV -->
 <nav>
   <div class="nav-inner">
     <button class="nav-btn active" onclick="showPage('members',this)" id="nav-members">
@@ -241,7 +227,7 @@ select option{background:#1C1C1F}
   </div>
 </div>
 
-<!-- MODAL EDIT MEMBRE -->
+<!-- MODAL EDIT -->
 <div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEdit()">
   <div class="modal">
     <div class="modal-head">
@@ -252,7 +238,7 @@ select option{background:#1C1C1F}
   </div>
 </div>
 
-<!-- MODAL AJOUTER COHORTE -->
+<!-- MODAL COHORTE -->
 <div class="modal-overlay" id="cohort-modal" onclick="if(event.target===this)closeCohortModal()">
   <div class="modal">
     <div class="modal-head">
@@ -357,7 +343,13 @@ function badge(s){
   const lbl={'Nouveau':'Nouveau','Note envoyée':'Note envoyée','Actif':'Actif','pending':'En attente','done':'Fait'};
   return `<span class="badge badge-${map[s]||'gold'}">${lbl[s]||s}</span>`;
 }
-
+function roleBadge(r){
+  if(!r) return '';
+  if(r==='Je cherche de l\'aide') return `<span class="badge badge-help">🙋 Cherche de l'aide</span>`;
+  if(r==='Je veux aider') return `<span class="badge badge-helper">🤝 Veut aider</span>`;
+  if(r==='Les deux') return `<span class="badge badge-both">🔄 Les deux</span>`;
+  return '';
+}
 function renderMembers(){
   const {members,filterStatus}=window._state;
   const q=(document.getElementById('search-input')||{}).value||'';
@@ -381,6 +373,7 @@ function renderMembers(){
             <span style="font-family:'Syne',sans-serif;font-weight:600;font-size:15px">${m.firstName||'?'} ${m.lastName||''}</span>
             ${badge(m.onboardingStatus||'Nouveau')}
           </div>
+          ${m.communityRole?`<div style="margin-bottom:3px">${roleBadge(m.communityRole)}</div>`:''}
           ${m.trigger?`<div style="font-size:12px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.trigger}</div>`:''}
           ${words.length?`<div style="margin-top:5px">${words.map(w=>`<span style="display:inline-flex;padding:2px 9px;background:rgba(255,255,255,0.04);border-radius:100px;font-size:11px;color:var(--text3);border:1px solid var(--border);margin:1px">${w}</span>`).join('')}</div>`:''}
         </div>
@@ -389,7 +382,6 @@ function renderMembers(){
     </div>`;
   }).join('');
 }
-
 function openSheet(id){
   const m=window._state.members.find(x=>x.id===id);if(!m)return;
   const [bg,fg]=aC(m.firstName);
@@ -403,6 +395,7 @@ function openSheet(id){
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">
           ${badge(m.onboardingStatus||'Nouveau')}
           ${cohort?`<span class="badge badge-gold">Vague ${cohort.number}</span>`:''}
+          ${roleBadge(m.communityRole)}
         </div>
       </div>
       <div style="display:flex;gap:7px">
@@ -430,8 +423,16 @@ function openSheet(id){
 function closeSheet(){document.getElementById('member-sheet').classList.remove('open');}
 </script>
 <script>
+function selectRole(role){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('selected'));
+  const btn=document.querySelector(`.role-btn[data-role="${role}"]`);
+  if(btn){btn.classList.add('selected');btn.querySelector('.role-check').textContent='✓';}
+  document.querySelectorAll('.role-btn:not(.selected) .role-check').forEach(c=>c.textContent='');
+  window._selectedRole=role;
+}
 function formHTML(m,submitFn,submitLabel){
-  const sel=(f,opts)=>`<select id="f-${f}"><option value="">—</option>${opts.map(o=>`<option value="${o}" ${(m[f]||'')=== o?'selected':''}>${o}</option>`).join('')}</select>`;
+  window._selectedRole=m.communityRole||'';
+  const sel=(f,opts)=>`<select id="f-${f}"><option value="">—</option>${opts.map(o=>`<option value="${o}" ${(m[f]||'')===o?'selected':''}>${o}</option>`).join('')}</select>`;
   return `
     <div class="field"><span class="field-label">Cohorte</span>
       <select id="f-cohortId"><option value="">Créez d'abord une cohorte</option>
@@ -454,6 +455,33 @@ function formHTML(m,submitFn,submitLabel){
     <div class="field"><span class="field-label">Domaines d'investissement</span><input id="f-investmentDomains" value="${m.investmentDomains||''}" placeholder="Immobilier, Bourse..."></div>
     <div class="field"><span class="field-label">Statut familial</span>${sel('familyStatus',['Célibataire','En couple','Marié(e)','Marié(e) avec enfants','Parent solo','Autre'])}</div>
     <div class="field"><span class="field-label">Statut onboarding</span>${sel('onboardingStatus',['Nouveau','Note envoyée','Actif'])}</div>
+    <div class="field">
+      <span class="field-label">Rôle dans la communauté</span>
+      <button class="role-btn ${m.communityRole==='Je cherche de l\'aide'?'selected':''}" data-role="Je cherche de l'aide" onclick="selectRole('Je cherche de l\'aide')">
+        <span class="role-emoji">🙋</span>
+        <div class="role-text">
+          <div class="role-title">Je cherche de l'aide</div>
+          <div class="role-sub">Je veux bénéficier de l'expérience des autres membres</div>
+        </div>
+        <div class="role-check">${m.communityRole==='Je cherche de l\'aide'?'✓':''}</div>
+      </button>
+      <button class="role-btn ${m.communityRole==='Je veux aider'?'selected':''}" data-role="Je veux aider" onclick="selectRole('Je veux aider')">
+        <span class="role-emoji">🤝</span>
+        <div class="role-text">
+          <div class="role-title">Je veux aider</div>
+          <div class="role-sub">Je partage mon expérience et mes ressources</div>
+        </div>
+        <div class="role-check">${m.communityRole==='Je veux aider'?'✓':''}</div>
+      </button>
+      <button class="role-btn ${m.communityRole==='Les deux'?'selected':''}" data-role="Les deux" onclick="selectRole('Les deux')">
+        <span class="role-emoji">🔄</span>
+        <div class="role-text">
+          <div class="role-title">Les deux</div>
+          <div class="role-sub">Je donne et je reçois selon les opportunités</div>
+        </div>
+        <div class="role-check">${m.communityRole==='Les deux'?'✓':''}</div>
+      </button>
+    </div>
     <div class="field"><span class="field-label">Notes complémentaires</span><textarea id="f-notes" rows="2" placeholder="Infos supplémentaires...">${m.notes||''}</textarea></div>
     <div style="padding:8px 0 6px"><button class="btn btn-gold" onclick="${submitFn}()">${submitLabel}</button></div>`;
 }
@@ -469,11 +497,13 @@ function getForm(){
     threeWords:g('f-threeWords'),threeWordsArray:words,
     investmentDomains:g('f-investmentDomains'),familyStatus:g('f-familyStatus'),
     onboardingStatus:g('f-onboardingStatus')||'Nouveau',
+    communityRole:window._selectedRole||'',
     cohortId,cohortName:cohort?.name||'',cohortNumber:cohort?.number||null,
     notes:g('f-notes'),
   };
 }
 function renderAddForm(){
+  window._selectedRole='';
   document.getElementById('add-form').innerHTML=formHTML({},'submitAdd','Ajouter le membre');
 }
 async function submitAdd(){
@@ -497,14 +527,10 @@ async function submitEdit(){
 }
 function confirmDelete(id,name){
   document.getElementById('confirm-text').innerHTML=`Supprimer <strong>${name.trim()}</strong> ? Cette action est irréversible.`;
-  document.getElementById('confirm-ok').onclick=async()=>{
-    await window._db.del('members',id);
-    closeConfirm();closeSheet();
-  };
+  document.getElementById('confirm-ok').onclick=async()=>{await window._db.del('members',id);closeConfirm();closeSheet();};
   document.getElementById('confirm-overlay').classList.add('open');
 }
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');}
-
 function renderCohorts(){
   const{cohorts,members}=window._state;
   const el=document.getElementById('cohorts-list');
@@ -568,8 +594,18 @@ async function runMatching(){
   if(!id){alert('Choisissez un membre');return;}
   const{members}=window._state;
   const base=members.find(m=>m.id===id);
-  const candidates=members.filter(m=>m.id!==id);
-  if(!candidates.length){document.getElementById('match-error').innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Ajoutez au moins 2 membres.</div>';return;}
+  const candidates=members.filter(m=>{
+    if(m.id===id) return false;
+    if(!m.communityRole) return false;
+    if(base.communityRole==='Je cherche de l\'aide') return m.communityRole==='Je veux aider'||m.communityRole==='Les deux';
+    if(base.communityRole==='Je veux aider') return m.communityRole==='Je cherche de l\'aide'||m.communityRole==='Les deux';
+    return true;
+  });
+  if(!candidates.length){
+    document.getElementById('match-error').innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Aucun membre compatible trouvé. Vérifiez que les membres ont renseigné leur rôle dans la communauté.</div>';
+    document.getElementById('match-results').innerHTML='';
+    return;
+  }
   const btn=document.getElementById('match-btn');
   btn.innerHTML='<div class="spinner" style="margin:0;width:16px;height:16px;border-width:2px"></div> Analyse en cours...';
   btn.disabled=true;
@@ -585,8 +621,11 @@ async function runMatching(){
       const name=m?`${m.firstName||'?'} ${m.lastName||''}`:'Membre inconnu';
       const color=r.score>=75?'var(--green)':r.score>=50?'var(--gold)':'var(--text2)';
       return `<div class="card card-static fu" style="margin-bottom:10px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div style="font-family:'Syne',sans-serif;font-weight:600;font-size:15px">${name}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:600;font-size:15px">${name}</div>
+            ${m&&m.communityRole?`<div style="margin-top:3px">${roleBadge(m.communityRole)}</div>`:''}
+          </div>
           <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:${color};line-height:1">${r.score}<span style="font-size:12px;color:var(--text3);font-weight:400">/100</span></div>
         </div>
         ${r.summary?`<p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px;font-style:italic">"${r.summary}"</p>`:''}
