@@ -161,14 +161,10 @@ select option{background:#1C1C1F}
     <div><div class="header-title">La Capitainerie</div><div class="header-sub">Community CRM</div></div>
     <div><div class="header-num" id="count4">0</div><div class="header-label">Membres</div></div>
   </div>
-
-  <!-- Onglets -->
   <div class="tab-switch">
     <button class="tab-switch-btn active" id="tab-entre" onclick="switchMatchTab('entre')">👥 Entre membres</button>
     <button class="tab-switch-btn" id="tab-keywords" onclick="switchMatchTab('keywords')">🔍 Par mots-clés</button>
   </div>
-
-  <!-- Entre membres -->
   <div id="match-entre">
     <div class="field">
       <span class="field-label">Membre</span>
@@ -185,8 +181,6 @@ select option{background:#1C1C1F}
     <div id="match-error"></div>
     <div id="match-results"></div>
   </div>
-
-  <!-- Par mots-clés -->
   <div id="match-keywords" style="display:none">
     <div class="field">
       <span class="field-label">Décrivez ce que vous cherchez</span>
@@ -508,7 +502,6 @@ function selectRole(role){
   if(btn){btn.classList.add('selected');btn.querySelector('.role-check').textContent='✓';}
   window._selectedRole=role;
 }
-
 function formHTML(m,formId,submitFn,submitLabel){
   window._selectedRole=m.communityRole||'';
   const isHelp=m.communityRole==="Je cherche de l'aide";
@@ -562,15 +555,13 @@ function formHTML(m,formId,submitFn,submitLabel){
     <div class="field"><span class="field-label">Notes complémentaires</span><textarea id="${formId}-notes" rows="2" placeholder="Infos supplémentaires...">${m.notes||''}</textarea></div>
     <div style="padding:8px 0 6px"><button class="btn btn-gold" onclick="${submitFn}('${formId}')">${submitLabel}</button></div>`;
 }
-
 function getFormData(formId){
   const g=id=>(document.getElementById(`${formId}-${id}`)||{}).value||'';
   const cohortId=g('cohortId');
   const cohort=(window._state.cohorts||[]).find(c=>c.id===cohortId);
   const words=g('threeWords').split(',').map(w=>w.trim()).filter(Boolean);
   return{
-    firstName:g('firstName').trim(),
-    lastName:g('lastName').trim(),
+    firstName:g('firstName').trim(),lastName:g('lastName').trim(),
     age:g('age')?parseInt(g('age')):null,
     gender:g('gender'),city:g('city'),profession:g('profession'),
     salary:g('salary'),patrimoine:g('patrimoine'),
@@ -583,7 +574,6 @@ function getFormData(formId){
     notes:g('notes'),
   };
 }
-
 function renderAddForm(){
   window._selectedRole='';
   document.getElementById('add-form').innerHTML=formHTML({},'add','submitAdd','Ajouter le membre');
@@ -718,28 +708,31 @@ async function runKeywordSearch(){
   const query=document.getElementById('keyword-query').value.trim();
   if(!query){alert('Décrivez ce que vous cherchez');return;}
   const{members}=window._state;
-  if(!members.length){document.getElementById('keyword-error').innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Aucun membre dans la base.</div>';return;}
+  if(!members.length){
+    document.getElementById('keyword-error').innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Aucun membre dans la base.</div>';
+    return;
+  }
   const btn=document.getElementById('keyword-btn');
   btn.innerHTML='<div class="spinner" style="margin:0;width:16px;height:16px;border-width:2px"></div> Recherche en cours...';
   btn.disabled=true;
   document.getElementById('keyword-error').innerHTML='';
   document.getElementById('keyword-results').innerHTML='<div class="spinner"></div>';
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const profiles=members.map(m=>({
+      id:m.id,firstName:m.firstName,lastName:m.lastName,
+      city:m.city,profession:m.profession,trigger:m.trigger,
+      brings:m.brings,seeks:m.seeks,investmentDomains:m.investmentDomains,
+      communityRole:m.communityRole,threeWordsArray:m.threeWordsArray,
+      notes:m.notes,salary:m.salary,patrimoine:m.patrimoine
+    }));
+    const res=await fetch('/api/search',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:2000,
-        system:`Tu es un assistant pour La Capitainerie, une communauté d'entrepreneurs et investisseurs. Tu analyses des profils de membres et tu trouves ceux qui correspondent à une recherche en langage naturel. Tu retournes UNIQUEMENT un JSON valide sans markdown. Format: {"results":[{"memberId":"id","score":85,"reason":"explication courte pourquoi ce membre correspond"}]}. Trie par score décroissant. Ne retourne que les membres avec un score >= 40.`,
-        messages:[{role:'user',content:`Recherche: "${query}"\n\nProfils des membres:\n${JSON.stringify(members.map(m=>({id:m.id,firstName:m.firstName,lastName:m.lastName,city:m.city,profession:m.profession,trigger:m.trigger,brings:m.brings,seeks:m.seeks,investmentDomains:m.investmentDomains,communityRole:m.communityRole,threeWordsArray:m.threeWordsArray,notes:m.notes})))}`}]
-      })
+      body:JSON.stringify({query,members:profiles})
     });
     if(!res.ok)throw new Error('Erreur API');
     const data=await res.json();
-    const text=data.content[0]?.text||'{}';
-    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
-    const results=parsed.results||[];
+    const results=data.results||[];
     if(!results.length){
       document.getElementById('keyword-results').innerHTML='<div class="empty"><div class="empty-emoji">🔍</div><div class="empty-title">Aucun résultat</div><div class="empty-sub">Essayez avec d\'autres mots-clés</div></div>';
     } else {
