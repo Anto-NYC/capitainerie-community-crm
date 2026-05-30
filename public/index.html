@@ -103,6 +103,9 @@ select option{background:#1C1C1F}
 .role-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px}
 .role-btn.selected .role-check{background:var(--gold);border-color:var(--gold);color:#080808}
 .relance-alert{background:rgba(224,82,82,0.08);border:1px solid rgba(224,82,82,0.2);border-radius:11px;padding:10px 13px;margin-top:10px;font-size:12px;color:#FF8A8A}
+.tab-switch{display:flex;gap:0;margin-bottom:24px;background:var(--input);border-radius:13px;padding:4px}
+.tab-switch-btn{flex:1;padding:9px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text3);background:transparent;transition:all 0.2s}
+.tab-switch-btn.active{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .fu{animation:fadeUp 0.25s ease forwards}
@@ -158,20 +161,44 @@ select option{background:#1C1C1F}
     <div><div class="header-title">La Capitainerie</div><div class="header-sub">Community CRM</div></div>
     <div><div class="header-num" id="count4">0</div><div class="header-label">Membres</div></div>
   </div>
-  <div class="field">
-    <span class="field-label">Membre</span>
-    <select id="match-select"><option value="">— Choisir —</option></select>
+
+  <!-- Onglets -->
+  <div class="tab-switch">
+    <button class="tab-switch-btn active" id="tab-entre" onclick="switchMatchTab('entre')">👥 Entre membres</button>
+    <button class="tab-switch-btn" id="tab-keywords" onclick="switchMatchTab('keywords')">🔍 Par mots-clés</button>
   </div>
-  <div class="field">
-    <span class="field-label">Périmètre</span>
-    <select id="match-scope"><option value="all">Tous les membres</option></select>
+
+  <!-- Entre membres -->
+  <div id="match-entre">
+    <div class="field">
+      <span class="field-label">Membre</span>
+      <select id="match-select"><option value="">— Choisir —</option></select>
+    </div>
+    <div class="field">
+      <span class="field-label">Périmètre</span>
+      <select id="match-scope"><option value="all">Tous les membres</option></select>
+    </div>
+    <button class="btn btn-green" onclick="runMatching()" id="match-btn" style="margin-bottom:20px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Analyser avec l'IA
+    </button>
+    <div id="match-error"></div>
+    <div id="match-results"></div>
   </div>
-  <button class="btn btn-green" onclick="runMatching()" id="match-btn" style="margin-bottom:20px">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    Analyser avec l'IA
-  </button>
-  <div id="match-error"></div>
-  <div id="match-results"></div>
+
+  <!-- Par mots-clés -->
+  <div id="match-keywords" style="display:none">
+    <div class="field">
+      <span class="field-label">Décrivez ce que vous cherchez</span>
+      <textarea id="keyword-query" rows="3" placeholder="Ex: je cherche quelqu'un de fort en immobilier à Paris, qui peut aider sur la fiscalité..."></textarea>
+    </div>
+    <button class="btn btn-green" onclick="runKeywordSearch()" id="keyword-btn" style="margin-bottom:20px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Rechercher avec l'IA
+    </button>
+    <div id="keyword-error"></div>
+    <div id="keyword-results"></div>
+  </div>
 </div>
 
 <!-- LIENS -->
@@ -336,6 +363,12 @@ function showPage(name,btn){
   btn.classList.add('active');
   if(name==='add') renderAddForm();
 }
+function switchMatchTab(tab){
+  document.getElementById('match-entre').style.display=tab==='entre'?'block':'none';
+  document.getElementById('match-keywords').style.display=tab==='keywords'?'block':'none';
+  document.getElementById('tab-entre').classList.toggle('active',tab==='entre');
+  document.getElementById('tab-keywords').classList.toggle('active',tab==='keywords');
+}
 function syncCounts(){
   const n=(window._state.members||[]).length;
   ['count1','count2','count4'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=n;});
@@ -478,7 +511,6 @@ function selectRole(role){
 
 function formHTML(m,formId,submitFn,submitLabel){
   window._selectedRole=m.communityRole||'';
-  const sel=(f,opts)=>`<select id="${formId}-${f}"><option value="">—</option>${opts.map(o=>`<option value="${o}" ${(m[f]||'')===o?'selected':''}>${o}</option>`).join('')}</select>`;
   const isHelp=m.communityRole==="Je cherche de l'aide";
   const isHelper=m.communityRole==='Je veux aider';
   const isBoth=m.communityRole==='Les deux';
@@ -556,7 +588,6 @@ function renderAddForm(){
   window._selectedRole='';
   document.getElementById('add-form').innerHTML=formHTML({},'add','submitAdd','Ajouter le membre');
 }
-
 async function submitAdd(formId){
   const data=getFormData(formId||'add');
   if(!data.firstName){alert('Le prénom est requis');return;}
@@ -565,7 +596,6 @@ async function submitAdd(formId){
   showPage('members',document.getElementById('nav-members'));
   setTimeout(()=>renderAddForm(),300);
 }
-
 function openEdit(id){
   const m=window._state.members.find(x=>x.id===id);if(!m)return;
   window._state.editingId=id;
@@ -573,7 +603,6 @@ function openEdit(id){
   document.getElementById('edit-modal').classList.add('open');
 }
 function closeEdit(){document.getElementById('edit-modal').classList.remove('open');}
-
 async function submitEdit(formId){
   const id=window._state.editingId;if(!id)return;
   const data=getFormData(formId||'edit');
@@ -581,14 +610,12 @@ async function submitEdit(formId){
   await window._db.update('members',id,data);
   closeEdit();
 }
-
 function confirmDelete(id,name){
   document.getElementById('confirm-text').innerHTML=`Supprimer <strong>${name.trim()}</strong> ? Cette action est irréversible.`;
   document.getElementById('confirm-ok').onclick=async()=>{await window._db.del('members',id);closeConfirm();closeSheet();};
   document.getElementById('confirm-overlay').classList.add('open');
 }
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');}
-
 function renderCohorts(){
   const{cohorts,members}=window._state;
   const el=document.getElementById('cohorts-list');
@@ -648,7 +675,7 @@ async function runMatching(){
     return true;
   });
   if(!candidates.length){
-    document.getElementById('match-error').innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Aucun membre compatible trouvé. Vérifiez que les membres ont renseigné leur rôle dans la communauté.</div>';
+    document.getElementById('match-error').innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Aucun membre compatible trouvé.</div>';
     document.getElementById('match-results').innerHTML='';
     return;
   }
@@ -686,6 +713,65 @@ async function runMatching(){
   btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Analyser avec l\'IA';
   btn.disabled=false;
 }
+
+async function runKeywordSearch(){
+  const query=document.getElementById('keyword-query').value.trim();
+  if(!query){alert('Décrivez ce que vous cherchez');return;}
+  const{members}=window._state;
+  if(!members.length){document.getElementById('keyword-error').innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Aucun membre dans la base.</div>';return;}
+  const btn=document.getElementById('keyword-btn');
+  btn.innerHTML='<div class="spinner" style="margin:0;width:16px;height:16px;border-width:2px"></div> Recherche en cours...';
+  btn.disabled=true;
+  document.getElementById('keyword-error').innerHTML='';
+  document.getElementById('keyword-results').innerHTML='<div class="spinner"></div>';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        system:`Tu es un assistant pour La Capitainerie, une communauté d'entrepreneurs et investisseurs. Tu analyses des profils de membres et tu trouves ceux qui correspondent à une recherche en langage naturel. Tu retournes UNIQUEMENT un JSON valide sans markdown. Format: {"results":[{"memberId":"id","score":85,"reason":"explication courte pourquoi ce membre correspond"}]}. Trie par score décroissant. Ne retourne que les membres avec un score >= 40.`,
+        messages:[{role:'user',content:`Recherche: "${query}"\n\nProfils des membres:\n${JSON.stringify(members.map(m=>({id:m.id,firstName:m.firstName,lastName:m.lastName,city:m.city,profession:m.profession,trigger:m.trigger,brings:m.brings,seeks:m.seeks,investmentDomains:m.investmentDomains,communityRole:m.communityRole,threeWordsArray:m.threeWordsArray,notes:m.notes})))}`}]
+      })
+    });
+    if(!res.ok)throw new Error('Erreur API');
+    const data=await res.json();
+    const text=data.content[0]?.text||'{}';
+    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
+    const results=parsed.results||[];
+    if(!results.length){
+      document.getElementById('keyword-results').innerHTML='<div class="empty"><div class="empty-emoji">🔍</div><div class="empty-title">Aucun résultat</div><div class="empty-sub">Essayez avec d\'autres mots-clés</div></div>';
+    } else {
+      document.getElementById('keyword-results').innerHTML=results.map(r=>{
+        const m=members.find(x=>x.id===r.memberId);
+        if(!m) return '';
+        const [bg,fg]=aC(m.firstName);
+        const color=r.score>=75?'var(--green)':r.score>=50?'var(--gold)':'var(--text2)';
+        return `<div class="card card-static fu" style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:13px;margin-bottom:10px">
+            <div style="width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Syne',sans-serif;background:${bg};color:${fg};overflow:hidden">${ini(m)}</div>
+            <div style="flex:1">
+              <div style="font-family:'Syne',sans-serif;font-weight:600;font-size:15px">${m.firstName||'?'} ${m.lastName||''}</div>
+              <div style="display:flex;gap:6px;margin-top:3px;flex-wrap:wrap">
+                ${badge(m.onboardingStatus||'Nouveau')}
+                ${roleBadge(m.communityRole)}
+              </div>
+            </div>
+            <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:${color};line-height:1">${r.score}<span style="font-size:12px;color:var(--text3);font-weight:400">/100</span></div>
+          </div>
+          ${r.reason?`<p style="font-size:13px;color:var(--text2);line-height:1.6;font-style:italic">"${r.reason}"</p>`:''}
+        </div>`;
+      }).join('');
+    }
+  }catch(e){
+    document.getElementById('keyword-error').innerHTML=`<div style="color:var(--red);font-size:13px;text-align:center;padding:16px">⚠️ ${e.message}</div>`;
+    document.getElementById('keyword-results').innerHTML='';
+  }
+  btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Rechercher avec l\'IA';
+  btn.disabled=false;
+}
+
 async function saveMatch(memberId,btn,score,summary,firstMessage){
   const base=window._state.members.find(m=>m.id===document.getElementById('match-select').value);
   const cand=window._state.members.find(m=>m.id===memberId);
