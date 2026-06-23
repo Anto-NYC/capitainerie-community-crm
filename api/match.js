@@ -29,29 +29,46 @@ module.exports = async function handler(req, res) {
   const cleanBase = strip(baseMember);
   const cleanCandidates = candidates.map(strip);
 
-  const systemPrompt = `Tu es un expert en matching communautaire pour La Capitainerie, une communauté d'entrepreneurs et investisseurs immobiliers premium.
+  const SYSTEM = `Tu es un expert en matching communautaire pour La Capitainerie, une communauté d'entrepreneurs et investisseurs immobiliers premium.
+Tu analyses des profils selon 8 critères pondérés : Complémentarité apports/besoins (30%), Résonance déclencheurs (25%), Compatibilité personnalité (15%), Valeur long terme (10%), Passions (7%), Style de vie (5%), Statut familial (4%), Domaines investissement (4%).
+Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte avant ou après.`;
 
-Tu analyses des profils de membres et calcules des scores de compatibilité selon ces 8 critères pondérés :
-1. Complémentarité apports/besoins : 30%
-2. Résonance des déclencheurs d'entrée : 25%
-3. Compatibilité de personnalité : 15%
-4. Valeur mutuelle long terme : 10%
-5. Passions communes : 7%
-6. Style de vie compatible : 5%
-7. Statut familial similaire : 4%
-8. Domaines d'investissement communs : 4%
+  const callClaude = async (prompt, maxTokens) => {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: maxTokens, system: SYSTEM, messages: [{ role: 'user', content: prompt }] }),
+    });
+    if (!res.ok) { const e = await res.text(); throw new Error(`Anthropic API error: ${e}`); }
+    const data = await res.json();
+    const text = (data.content[0]?.text || '').replace(/```json|```/g, '').trim();
+    return JSON.parse(text);
+  };
 
-RÈGLES STRICTES :
-- Retourne UNIQUEMENT les 5 meilleurs matchs maximum, triés par score décroissant.
-- Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte avant ou après.`;
-
-  const userPrompt = `Profil de base :
+  try {
+    // ── Passe 1 : scores uniquement pour tous les candidats ──────────────────
+    const pass1Prompt = `Profil de base :
 ${JSON.stringify(cleanBase, null, 2)}
 
-Candidats à évaluer :
-${JSON.stringify(cleanCandidates, null, 2)}
+Candidats à scorer :
+${JSON.stringify(cleanCandidates.map(c => ({ id: c.id, brings: c.brings, seeks: c.seeks, trigger: c.trigger, profession: c.profession, passion1: c.passion1, passion2: c.passion2, lifestyle: c.lifestyle, familyStatus: c.familyStatus, investmentDomains: c.investmentDomains })), null, 2)}
 
-Retourne ce JSON (5 meilleurs matchs max) :
+Retourne UNIQUEMENT ce JSON — juste les scores, pas d'analyse :
+{ "scores": [{ "memberId": "id", "score": 85 }] }
+Trie par score décroissant.`;
+
+    const pass1 = await callClaude(pass1Prompt, 1000);
+    const top5ids = (pass1.scores || []).slice(0, 5).map(s => s.memberId);
+    const top5candidates = cleanCandidates.filter(c => top5ids.includes(c.id));
+
+    // ── Passe 2 : analyse détaillée des 5 meilleurs uniquement ──────────────
+    const pass2Prompt = `Profil de base :
+${JSON.stringify(cleanBase, null, 2)}
+
+Analyse ces 5 candidats en détail :
+${JSON.stringify(top5candidates, null, 2)}
+
+Retourne ce JSON :
 {
   "matches": [
     {
@@ -73,39 +90,9 @@ Retourne ce JSON (5 meilleurs matchs max) :
   ]
 }`;
 
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 8000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-      }),
-    });
+    const pass2 = await callClaude(pass2Prompt, 8000);
+    return res.status(200).json(pass2);
 
-    if (!response.ok) {
-      const err = await response.text();
-      return res.status(500).json({ error: 'Anthropic API error', details: err });
-    }
-
-    const data = await response.json();
-    const text = data.content[0]?.text || '';
-
-    let parsed;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      const clean = text.replace(/```json|```/g, '').trim();
-      parsed = JSON.parse(clean);
-    }
-
-    return res.status(200).json(parsed);
   } catch (error) {
     console.error('Match API error:', error);
     return res.status(500).json({ error: error.message });
