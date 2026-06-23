@@ -61,23 +61,34 @@ Retourne ce JSON (les 5 meilleurs matchs uniquement, triés par score décroissa
   ]
 }`;
 
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const callClaude = async () => {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 8000, system: SYSTEM, messages: [{ role: 'user', content: prompt }] }),
     });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({}));
-      throw new Error(body?.error?.message || `Anthropic API error ${response.status}`);
+    if (!r.ok) {
+      const body = await r.json().catch(() => ({}));
+      const err = new Error(body?.error?.message || `Anthropic API error ${r.status}`);
+      err.isOverloaded = body?.error?.type === 'overloaded_error';
+      throw err;
     }
-
-    const data = await response.json();
+    const data = await r.json();
     const text = (data.content[0]?.text || '').replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(text);
-    return res.status(200).json(parsed);
+    return JSON.parse(text);
+  };
 
+  try {
+    let parsed;
+    try {
+      parsed = await callClaude();
+    } catch (e) {
+      if (e.isOverloaded) {
+        await new Promise(r => setTimeout(r, 1000));
+        parsed = await callClaude();
+      } else throw e;
+    }
+    return res.status(200).json(parsed);
   } catch (error) {
     console.error('Match API error:', error);
     return res.status(500).json({ error: error.message });
