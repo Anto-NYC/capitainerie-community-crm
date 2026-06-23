@@ -33,53 +33,13 @@ module.exports = async function handler(req, res) {
 Tu analyses des profils selon 8 critères pondérés : Complémentarité apports/besoins (30%), Résonance déclencheurs (25%), Compatibilité personnalité (15%), Valeur long terme (10%), Passions (7%), Style de vie (5%), Statut familial (4%), Domaines investissement (4%).
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte avant ou après.`;
 
-  const callClaude = async (prompt, maxTokens, attempt = 1) => {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: maxTokens, system: SYSTEM, messages: [{ role: 'user', content: prompt }] }),
-    });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({}));
-      const isOverloaded = body?.error?.type === 'overloaded_error';
-      if (isOverloaded && attempt < 4) {
-        const delay = attempt * 3000; // 3s, 6s, 9s
-        await new Promise(r => setTimeout(r, delay));
-        return callClaude(prompt, maxTokens, attempt + 1);
-      }
-      throw new Error(body?.error?.message || `Anthropic API error ${response.status}`);
-    }
-
-    const data = await response.json();
-    const text = (data.content[0]?.text || '').replace(/```json|```/g, '').trim();
-    return JSON.parse(text);
-  };
-
-  try {
-    // ── Passe 1 : scores uniquement pour tous les candidats ──────────────────
-    const pass1Prompt = `Profil de base :
+  const prompt = `Profil de base :
 ${JSON.stringify(cleanBase, null, 2)}
 
-Candidats à scorer :
-${JSON.stringify(cleanCandidates.map(c => ({ id: c.id, brings: c.brings, seeks: c.seeks, trigger: c.trigger, profession: c.profession, passion1: c.passion1, passion2: c.passion2, lifestyle: c.lifestyle, familyStatus: c.familyStatus, investmentDomains: c.investmentDomains })), null, 2)}
+Candidats à évaluer :
+${JSON.stringify(cleanCandidates, null, 2)}
 
-Retourne UNIQUEMENT ce JSON — juste les scores, pas d'analyse :
-{ "scores": [{ "memberId": "id", "score": 85 }] }
-Trie par score décroissant.`;
-
-    const pass1 = await callClaude(pass1Prompt, 1000);
-    const top5ids = (pass1.scores || []).slice(0, 5).map(s => s.memberId);
-    const top5candidates = cleanCandidates.filter(c => top5ids.includes(c.id));
-
-    // ── Passe 2 : analyse détaillée des 5 meilleurs uniquement ──────────────
-    const pass2Prompt = `Profil de base :
-${JSON.stringify(cleanBase, null, 2)}
-
-Analyse ces 5 candidats en détail :
-${JSON.stringify(top5candidates, null, 2)}
-
-Retourne ce JSON :
+Retourne ce JSON (les 5 meilleurs matchs uniquement, triés par score décroissant) :
 {
   "matches": [
     {
@@ -101,8 +61,22 @@ Retourne ce JSON :
   ]
 }`;
 
-    const pass2 = await callClaude(pass2Prompt, 8000);
-    return res.status(200).json(pass2);
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 8000, system: SYSTEM, messages: [{ role: 'user', content: prompt }] }),
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body?.error?.message || `Anthropic API error ${response.status}`);
+    }
+
+    const data = await response.json();
+    const text = (data.content[0]?.text || '').replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(text);
+    return res.status(200).json(parsed);
 
   } catch (error) {
     console.error('Match API error:', error);
