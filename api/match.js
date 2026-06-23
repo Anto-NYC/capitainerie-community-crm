@@ -36,9 +36,6 @@ Tu analyses des profils de membres et calcules des scores de compatibilité selo
 
 RÈGLES STRICTES :
 - Retourne UNIQUEMENT les 5 meilleurs matchs maximum, triés par score décroissant.
-- Chaque "reason" doit faire 10 mots maximum.
-- "summary" : 1 phrase courte maximum.
-- "firstMessage" : 1 phrase courte maximum.
 - Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte avant ou après.`;
 
   const userPrompt = `Profil de base :
@@ -54,17 +51,17 @@ Retourne ce JSON (5 meilleurs matchs max) :
       "memberId": "id_du_candidat",
       "score": 85,
       "criteria": {
-        "complementarity": { "score": 28, "max": 30, "reason": "10 mots max" },
-        "triggers": { "score": 22, "max": 25, "reason": "10 mots max" },
-        "personality": { "score": 12, "max": 15, "reason": "10 mots max" },
-        "longTermValue": { "score": 8, "max": 10, "reason": "10 mots max" },
-        "passions": { "score": 5, "max": 7, "reason": "10 mots max" },
-        "lifestyle": { "score": 4, "max": 5, "reason": "10 mots max" },
-        "familyStatus": { "score": 3, "max": 4, "reason": "10 mots max" },
-        "investment": { "score": 3, "max": 4, "reason": "10 mots max" }
+        "complementarity": { "score": 28, "max": 30, "reason": "..." },
+        "triggers": { "score": 22, "max": 25, "reason": "..." },
+        "personality": { "score": 12, "max": 15, "reason": "..." },
+        "longTermValue": { "score": 8, "max": 10, "reason": "..." },
+        "passions": { "score": 5, "max": 7, "reason": "..." },
+        "lifestyle": { "score": 4, "max": 5, "reason": "..." },
+        "familyStatus": { "score": 3, "max": 4, "reason": "..." },
+        "investment": { "score": 3, "max": 4, "reason": "..." }
       },
-      "summary": "1 phrase max",
-      "firstMessage": "1 phrase max"
+      "summary": "Résumé en 2-3 phrases du potentiel de cette mise en relation",
+      "firstMessage": "Suggestion de message d'introduction personnalisé"
     }
   ]
 }`;
