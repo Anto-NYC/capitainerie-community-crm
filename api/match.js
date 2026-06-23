@@ -33,14 +33,25 @@ module.exports = async function handler(req, res) {
 Tu analyses des profils selon 8 critères pondérés : Complémentarité apports/besoins (30%), Résonance déclencheurs (25%), Compatibilité personnalité (15%), Valeur long terme (10%), Passions (7%), Style de vie (5%), Statut familial (4%), Domaines investissement (4%).
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte avant ou après.`;
 
-  const callClaude = async (prompt, maxTokens) => {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const callClaude = async (prompt, maxTokens, attempt = 1) => {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: maxTokens, system: SYSTEM, messages: [{ role: 'user', content: prompt }] }),
     });
-    if (!res.ok) { const e = await res.text(); throw new Error(`Anthropic API error: ${e}`); }
-    const data = await res.json();
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      const isOverloaded = body?.error?.type === 'overloaded_error';
+      if (isOverloaded && attempt < 4) {
+        const delay = attempt * 3000; // 3s, 6s, 9s
+        await new Promise(r => setTimeout(r, delay));
+        return callClaude(prompt, maxTokens, attempt + 1);
+      }
+      throw new Error(body?.error?.message || `Anthropic API error ${response.status}`);
+    }
+
+    const data = await response.json();
     const text = (data.content[0]?.text || '').replace(/```json|```/g, '').trim();
     return JSON.parse(text);
   };
