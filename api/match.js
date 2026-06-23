@@ -22,6 +22,13 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'API key not configured' });
   }
 
+  // Strip Firebase metadata — only keep fields relevant for matching
+  const MATCHING_FIELDS = ['id','firstName','lastName','city','profession','familyStatus','lifestyle','passion1','passion2','investmentDomains','trigger','brings','seeks','threeWords','threeWordsArray','cohortName','cohortNumber','onboardingStatus'];
+  const strip = (m) => Object.fromEntries(MATCHING_FIELDS.filter(k => m[k] != null).map(k => [k, m[k]]));
+
+  const cleanBase = strip(baseMember);
+  const cleanCandidates = candidates.map(strip);
+
   const systemPrompt = `Tu es un expert en matching communautaire pour La Capitainerie, une communauté d'entrepreneurs et investisseurs immobiliers premium.
 
 Tu analyses des profils de membres et calcules des scores de compatibilité selon ces 8 critères pondérés :
@@ -39,10 +46,10 @@ RÈGLES STRICTES :
 - Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte avant ou après.`;
 
   const userPrompt = `Profil de base :
-${JSON.stringify(baseMember, null, 2)}
+${JSON.stringify(cleanBase, null, 2)}
 
 Candidats à évaluer :
-${JSON.stringify(candidates, null, 2)}
+${JSON.stringify(cleanCandidates, null, 2)}
 
 Retourne ce JSON (5 meilleurs matchs max) :
 {
@@ -76,7 +83,7 @@ Retourne ce JSON (5 meilleurs matchs max) :
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 4000,
+        max_tokens: 8000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       }),
