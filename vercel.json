@@ -1,5 +1,9 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build",
-  "framework": "create-react-app"
+  "framework": "create-react-app",
+  "functions": {
+    "api/match.js": { "maxDuration": 60 },
+    "api/search.js": { "maxDuration": 30 }
+  }
 }
